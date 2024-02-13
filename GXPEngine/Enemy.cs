@@ -9,7 +9,7 @@ namespace GXPEngine
 {
     internal class Enemy : AnimationSprite
     {
-{
+
         private string filename;
         private int cols;
         private int rows;
@@ -17,7 +17,7 @@ namespace GXPEngine
 
         private bool addCollider;
 
-        public Enemy(String filename, int cols, int rows, float startY, int frames = -1, bool addCollider = true, ) : base(filename, cols, rows, frames, addCollider)
+        public Enemy(String filename, int cols, int rows, float startY, int frames = -1, bool addCollider = true) : base(filename, cols, rows, frames, addCollider)
         {
             this.filename = filename;
             this.cols = cols;
@@ -28,4 +28,4 @@ namespace GXPEngine
         }
     }
 }
-}
+

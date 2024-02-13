@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GXPEngine;                                // GXPEngine contains the engine
-using System.Drawing;
-using System.Media;
 using System.Runtime.CompilerServices;
 
 namespace GXPEngine
@@ -23,6 +20,9 @@ namespace GXPEngine
 
         private bool moving;
 
+        private List<Bullet> bullets = new List<Bullet>();
+
+
        public Player(string filename, int cols, int rows, int frames = -1, bool addCollider = true) : base(filename, cols, rows, frames, addCollider)
         {
             this.filename = filename;
@@ -37,6 +37,11 @@ namespace GXPEngine
         public void Update()
         {
             Move();
+            Shoot();
+            foreach (Bullet bullet in bullets)
+            {
+                bullet.Update();
+            }
         }
         
         void Move()
@@ -85,6 +90,16 @@ namespace GXPEngine
                 //dust.Mirror(false, false);
                 //dust.x = 10;
                 Mirror(false, false);
+            }
+        }
+
+        void Shoot()
+        {
+            if (Input.GetKeyDown(Key.SPACE))
+            {
+                Bullet newBullet = new Bullet("circle.png", x + width/2s, y - 25);
+                game.AddChild(newBullet);
+                bullets.Add(newBullet);
             }
         }
     }
