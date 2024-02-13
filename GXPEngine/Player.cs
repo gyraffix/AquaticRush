@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Collections;
 
 namespace GXPEngine
 {
@@ -13,12 +14,15 @@ namespace GXPEngine
        private string filename;
        private int cols;
        private int rows;
-       
+       private List<int> toDestroy = new List<int>();
+
        private bool addCollider;
         private float playerSpeed;
         private float posY = 500;
 
         private bool moving;
+        private bool coolDown;
+        private bool canShoot = true;
 
         private List<Bullet> bullets = new List<Bullet>();
 
@@ -36,11 +40,34 @@ namespace GXPEngine
 
         public void Update()
         {
+
             Move();
             Shoot();
             foreach (Bullet bullet in bullets)
             {
                 bullet.Update();
+                if (bullet.y < 0)
+                {
+                    
+                    
+                    Console.WriteLine("bullet destroyed");
+                    
+                    
+                    toDestroy.Add(bullets.IndexOf(bullet));
+                }
+            }
+            foreach (int index in toDestroy)
+            {
+                bullets.RemoveAt(index);
+                
+            }
+            toDestroy.Clear();
+
+            if (coolDown)
+            {
+
+                parent.AddChild(new Coroutine(shootCoolDown()));
+                coolDown = false;
             }
         }
         
@@ -95,12 +122,22 @@ namespace GXPEngine
 
         void Shoot()
         {
-            if (Input.GetKeyDown(Key.SPACE))
+            if (Input.GetKeyDown(Key.SPACE) && canShoot)
             {
-                Bullet newBullet = new Bullet("circle.png", x + width/2s, y - 25);
-                game.AddChild(newBullet);
+                Bullet newBullet = new Bullet("circle.png", x + width/2, y - 25);
+                parent.AddChild(newBullet);
                 bullets.Add(newBullet);
+                Console.WriteLine("there are currently " + bullets.Count + " bullets");
+                canShoot = false;
+                coolDown = true;
             }
+            
+        }
+
+        IEnumerator shootCoolDown()
+        {
+            yield return new WaitForSeconds(0.5f);
+            canShoot = true;
         }
     }
 }

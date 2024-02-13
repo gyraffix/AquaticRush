@@ -14,6 +14,7 @@ namespace GXPEngine
         private bool addCollider;
         private float bulletSpeed = 2;
         
+        
 
         public Bullet(string filename,float startX, float startY, bool keepInCache = false, bool addCollider = true) : base(filename, keepInCache, addCollider)
         {
@@ -28,6 +29,10 @@ namespace GXPEngine
         public void Update()
         {
             y -= bulletSpeed;
+
+            
         }
+
+        
     }
 }
