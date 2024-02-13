@@ -15,6 +15,7 @@ namespace GXPEngine
         private float bulletSpeed = 2;
         
         
+        
 
         public Bullet(string filename,float startX, float startY, bool keepInCache = false, bool addCollider = true) : base(filename, keepInCache, addCollider)
         {
@@ -33,6 +34,13 @@ namespace GXPEngine
             
         }
 
-        
+        void OnCollision(GameObject other)
+        {
+            if (other != FindObjectOfType<Player>())
+            {
+                flagged = true;
+                other.flagged = true;
+            }
+        }
     }
 }

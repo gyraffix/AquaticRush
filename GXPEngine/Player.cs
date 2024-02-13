@@ -18,6 +18,7 @@ namespace GXPEngine
 
        private bool addCollider;
         private float playerSpeed;
+        
         private float posY = 500;
 
         private bool moving;
@@ -46,11 +47,11 @@ namespace GXPEngine
             foreach (Bullet bullet in bullets)
             {
                 bullet.Update();
-                if (bullet.y < 0)
+                if ( /*bullet.y < 0 ||*/ bullet.flagged)
                 {
                     
                     
-                    Console.WriteLine("bullet destroyed");
+                    //Console.WriteLine("bullet destroyed");
                     
                     
                     toDestroy.Add(bullets.IndexOf(bullet));
@@ -58,7 +59,10 @@ namespace GXPEngine
             }
             foreach (int index in toDestroy)
             {
-                bullets.RemoveAt(index);
+                
+                bullets[index].LateDestroy();
+                
+                
                 
             }
             toDestroy.Clear();

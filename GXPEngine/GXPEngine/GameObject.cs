@@ -14,7 +14,7 @@ namespace GXPEngine
 		
 		private List<GameObject> _children = new List<GameObject>();
 		private GameObject _parent = null;
-		
+		public bool flagged = false;
 		public bool visible = true;
 		private bool destroyed = false;
 
