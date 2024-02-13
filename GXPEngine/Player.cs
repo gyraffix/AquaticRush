@@ -54,6 +54,15 @@ namespace GXPEngine
             if (moving)
             {
                 Translate(playerSpeed, 0);
+                if (playerSpeed < 0 &&  x < 0) 
+                {
+                    x = 0;
+                }
+                else if (playerSpeed > 0 && x > 735)
+                {
+                    x = 735;
+                }
+
             }
 
         }
