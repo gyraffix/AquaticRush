@@ -40,6 +40,7 @@ namespace GXPEngine
             {
                 flagged = true;
                 other.flagged = true;
+                
             }
         }
     }

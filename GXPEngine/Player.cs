@@ -61,7 +61,7 @@ namespace GXPEngine
             {
                 
                 bullets[index].LateDestroy();
-                
+                bullets.RemoveAt(index);
                 
                 
             }
