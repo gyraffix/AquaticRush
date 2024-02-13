@@ -16,7 +16,7 @@ namespace GXPEngine
        private string filename;
        private int cols;
        private int rows;
-       private int frames;
+       
        private bool addCollider;
         private float playerSpeed;
         private float posY = 500;
@@ -28,7 +28,7 @@ namespace GXPEngine
             this.filename = filename;
             this.cols = cols;
             this.rows = rows;
-            this.frames = frames;
+            
 
             this.addCollider = addCollider;
             SetXY(game.width/2 - 25, posY);
