@@ -11,7 +11,7 @@ using System.Threading;
 public class MyGame : Game {
 
 	private Sprite background;
-	private float backgroundSpeed = 0.8f;
+	private float backgroundSpeed = 1f;
 
 	private Player player;
 	private List<Enemy> enemies = new List<Enemy>();
@@ -31,9 +31,9 @@ public class MyGame : Game {
     public MyGame() : base(1366, 768, false)
 	{
 
-        //TODO: implement Start menu (discuss menu design)
+		//TODO: implement Second background, immplement second fade.	
 
-        //TODO: implement moving background. (requires background)
+        //TODO: implement Start menu (discuss menu design)
 
         //TODO: implement sprites and animations (requires Sprites)
 
@@ -146,6 +146,8 @@ public class MyGame : Game {
 	{
 		background.Translate(0, backgroundSpeed);
 		if (background.y == 0) background.SetXY(0, -height);
+
+		background.alpha = Math.Max(1 - (difficulty - 1) / 2, 0);
 	}
 
 	IEnumerator enemyLoop()
