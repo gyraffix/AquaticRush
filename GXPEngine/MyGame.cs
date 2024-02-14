@@ -23,7 +23,6 @@ public class MyGame : Game {
     public MyGame() : base(1366, 768, false)     // Create a window that's 800x600 and NOT fullscreen
 	{
 
-		//TODO: add bullet trajectories
 
 		//TODO: add player collission
 
@@ -43,7 +42,7 @@ public class MyGame : Game {
 
         player = new Player("triangle.png", 1, 1);
 
-        UI = new EasyDraw(800, 200, false);
+        UI = new EasyDraw(width, 200, false);
         AddChild(player);
 		
 		AddChild(new Coroutine(enemyLoop()));
@@ -66,7 +65,7 @@ public class MyGame : Game {
 		{
 			enemy.Update();
 
-			if (enemy.y > 620 || enemy.flagged)
+			if (enemy.y > height || enemy.flagged)
 			{
 				if (enemy.flagged)
 				{
@@ -85,6 +84,7 @@ public class MyGame : Game {
 		toDestroy.Clear();
         UI.Clear(0);
         UI.Text("Score: " + score, 25, 40);
+		UI.Text("Lives: " + Math.Floor(player.lives), width - 150, 40);
     }
 
 	static void Main()                          // Main() is the first method that's called when the program is run

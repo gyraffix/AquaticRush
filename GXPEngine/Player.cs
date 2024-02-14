@@ -18,8 +18,7 @@ namespace GXPEngine
 
        private bool addCollider;
         private float playerSpeed;
-        
-        
+        public float lives = 3;
 
         private float rotateSpeed;
         private bool rotating;
@@ -85,10 +84,12 @@ namespace GXPEngine
             if (Input.GetKey(Key.A))
             {
                 Walk(-1);
+                Rotate(-1);
             }
             if (Input.GetKey(Key.D)) 
             {  
                 Walk(1); 
+                Rotate(1);
             }
             if (moving)
             {
@@ -97,21 +98,14 @@ namespace GXPEngine
                 {
                     x = 0;
                 }
-                else if (playerSpeed > 0 && x > game.width - 65)
+                else if (playerSpeed > 0 && x > game.width)
                 {
-                    x = 735;
+                    x = game.width;
                 }
 
             }
 
-            if (Input.GetKey(Key.LEFT))
-            {
-                Rotate(-1);
-            }
-            if (Input.GetKey(Key.RIGHT))
-            {
-                Rotate(1);
-            }
+            
 
             if (rotating)
             {
@@ -183,6 +177,15 @@ namespace GXPEngine
         {
             yield return new WaitForSeconds(0.5f);
             canShoot = true;
+        }
+
+        void OnCollision(GameObject other)
+        {
+            if (other.GetType().Equals(typeof(Enemy)))
+            {
+                other.flagged = true;
+                lives -= 0.5f ;
+            }
         }
     }
 }
