@@ -16,14 +16,15 @@ public class MyGame : Game {
 	private float backgroundSpeed = 1f;
 
 	private Player player;
-
+	private bool restart;
 	private Sprite enemyPlace;
 	private List<Enemy> enemies = new List<Enemy>();
 	private bool spawnEnemy = false;
 	private float enemyCooldown = 1.5f;
 	private bool timerStarted = false;
     private List<int> toDestroy = new List<int>();
-
+	private EasyDraw startScreen;
+	private EasyDraw gameOverScreen;
 
 	public float difficulty = 1;
 	public int score { get; set; } = 0;
@@ -39,17 +40,23 @@ public class MyGame : Game {
 
 		//TODO: implement Second background, immplement second fade.	
 
-        //TODO: implement Start menu (discuss menu design)
+		//TODO: implement Start menu (discuss menu design)
 
-        //TODO: implement sprites and animations (requires Sprites)
+		//TODO: implement sprites and animations (requires Sprites)
 
-        //TODO: implement powerups (Maybe? discuss powerups)
+		//TODO: implement powerups (Maybe? discuss powerups)
 
-        //TODO: implement jump move (maybe??)
+		//TODO: implement jump move (maybe??)
 
+		startScreen = new EasyDraw(width, height);
+		AddChild(startScreen);
+		startScreen.TextFont("minecraft.ttf", 40);
+		startScreen.Text("Press Space to Start", width/3.3f, height/2);
 
-
-
+        gameOverScreen = new EasyDraw(width, height);
+        gameOverScreen.TextFont("minecraft.ttf", 40);
+		gameOverScreen.TextAlign(CenterMode.Center, CenterMode.Center);
+        
     }
 
     // For every game object, Update is called every frame, by the engine:
@@ -101,6 +108,11 @@ public class MyGame : Game {
 	private void StartGame()
 	{
 
+
+		if (!restart) startScreen.Destroy();
+
+		else RemoveChild(gameOverScreen);
+
 		background = new Sprite("background.png", false, false);
 		background.SetXY(0, -height);
 
@@ -131,17 +143,21 @@ public class MyGame : Game {
 
 	private void GameOver()
 	{
-
-			player.LateDestroy();
-			playerDestroyed = true;
-			RemoveChild(player);
-            foreach (GameObject obj in GetChildren())
-            {
-                RemoveChild(obj);
-            }
+		gameOverScreen.ClearTransparent();
+		restart = true;
+		player.LateDestroy();
+		playerDestroyed = true;
+		RemoveChild(player);
+        foreach (GameObject obj in GetChildren())
+        {
+			RemoveChild(obj);
+        }
 		finalScore = score;
-		score = 0;
+        Console.WriteLine(finalScore);
+        score = 0;
 		difficulty = 1;
+		AddChild(gameOverScreen);
+        gameOverScreen.Text("You Lost" + "\n" + "Score:" + finalScore + "\nPress Space to try again", width / 2f, height / 2);
     }
 
 	public void changeScore(int change)
@@ -158,7 +174,7 @@ public class MyGame : Game {
 		background.Translate(0, backgroundSpeed);
 		if (background.y == 0) background.SetXY(0, -height);
 
-		background.alpha = Math.Max(1 - (difficulty - 1) / 2, 0);
+		//background.alpha = Math.Max(1 - (difficulty - 1) / 2, 0); //TODO: transparent background.
 	}
 
 	IEnumerator enemyLoop()
@@ -178,11 +194,13 @@ public class MyGame : Game {
 		}
     }
 
+
+
 	IEnumerator difficultyLoop() 
 	{
 		while (difficulty < 3)
         {
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.5f);
             difficulty += 0.01f;
         }
     }

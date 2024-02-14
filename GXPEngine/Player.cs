@@ -24,6 +24,7 @@ namespace GXPEngine
         private bool rotating;
         private bool moving;
         private bool jumping;
+        private bool canJump = true;
         private bool coolDown;
         private bool canShoot = true;
 
@@ -50,12 +51,7 @@ namespace GXPEngine
             {
                 bullet.Update();
                 if ( bullet.y < 0 || bullet.flagged)
-                {
-                    
-                    
-                    //Console.WriteLine("bullet destroyed");
-                    
-                    
+                { 
                     toDestroy.Add(bullets.IndexOf(bullet));
                 }
             }
@@ -140,16 +136,12 @@ namespace GXPEngine
 
                 playerSpeed = -1;
                 moving = true;
-                //dust.Mirror(true, false);
-                //dust.x = 55;
                 Mirror(true, false);
             }
             else
             {
                 playerSpeed = 1;
                 moving = true;
-                //dust.Mirror(false, false);
-                //dust.x = 10;
                 Mirror(false, false);
             }
         }
@@ -171,8 +163,12 @@ namespace GXPEngine
 
         void Jump()
         {
-            jumping = true;
-            AddChild(new Coroutine(jumpTimer()));
+            if (canJump)
+            {
+                jumping = true;
+                AddChild(new Coroutine(jumpCooldown()));
+                AddChild(new Coroutine(jumpTimer()));
+            }
         }
 
         void Shoot()
@@ -212,6 +208,13 @@ namespace GXPEngine
                 }
             }
             jumping = false;
+        }
+
+        IEnumerator jumpCooldown()
+        {
+            canJump = false;
+            yield return new WaitForSeconds(3);
+            canJump = true;
         }
 
         void OnCollision(GameObject other)
