@@ -10,19 +10,25 @@ using System.Threading;
 
 public class MyGame : Game {
 
-	private Sprite background;
+    private Random rnd = new Random();
+
+    private Sprite background;
 	private float backgroundSpeed = 1f;
 
 	private Player player;
+
+	private Sprite enemyPlace;
 	private List<Enemy> enemies = new List<Enemy>();
-	private Random rnd = new Random();
 	private bool spawnEnemy = false;
 	private float enemyCooldown = 1.5f;
 	private bool timerStarted = false;
     private List<int> toDestroy = new List<int>();
+
+
 	public float difficulty = 1;
 	public int score { get; set; } = 0;
 	private int finalScore;
+
 	public EasyDraw UI;
 
 	public bool gameOver = true;
@@ -99,7 +105,11 @@ public class MyGame : Game {
 		background.SetXY(0, -height);
 
 		AddChild(background);
-		
+
+		enemyPlace = new Sprite("square.png", false, false);
+		enemyPlace.alpha = 0;
+		AddChild(enemyPlace);
+
         player = new Player("triangle.png", 1, 1);
 
         UI = new EasyDraw(width, 200, false);
@@ -107,6 +117,7 @@ public class MyGame : Game {
 
         AddChild(new Coroutine(enemyLoop()));
 		AddChild(new Coroutine(difficultyLoop()));
+
 
         player.SetColor(0.5f, 0.1f, 0.1f);
 
@@ -159,7 +170,7 @@ public class MyGame : Game {
 				Console.WriteLine("enemy created");
 
 				enemies.Add(newEnemy);
-				AddChild(newEnemy);
+				enemyPlace.AddChild(newEnemy);
 
 			yield return new WaitForSeconds(enemyCooldown / difficulty);
 

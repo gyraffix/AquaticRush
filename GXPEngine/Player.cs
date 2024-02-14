@@ -19,10 +19,11 @@ namespace GXPEngine
        private bool addCollider;
         private float playerSpeed;
         public float lives = 3;
-
+        public float scaleOG;
         private float rotateSpeed;
         private bool rotating;
         private bool moving;
+        private bool jumping;
         private bool coolDown;
         private bool canShoot = true;
 
@@ -34,8 +35,8 @@ namespace GXPEngine
             this.filename = filename;
             this.cols = cols;
             this.rows = rows;
-            
 
+            scaleOG = scale;
             this.addCollider = addCollider;
             SetXY(game.width/2 - 25, game.height - 100);
             SetOrigin(width / 2, height / 2);
@@ -43,7 +44,6 @@ namespace GXPEngine
 
         public void Update()
         {
-            
             Move();
             Shoot();
             foreach (Bullet bullet in bullets)
@@ -92,6 +92,11 @@ namespace GXPEngine
                 Walk(1); 
                 Rotate(1);
             }
+            if(Input.GetKeyDown(Key.LEFT_SHIFT) && !jumping)
+            {
+                Jump();
+            }
+
             if (moving)
             {
                 Translate(playerSpeed, 0);
@@ -164,6 +169,12 @@ namespace GXPEngine
             }
         }
 
+        void Jump()
+        {
+            jumping = true;
+            AddChild(new Coroutine(jumpTimer()));
+        }
+
         void Shoot()
         {
             if (Input.GetKeyDown(Key.SPACE) && canShoot)
@@ -184,9 +195,28 @@ namespace GXPEngine
             canShoot = true;
         }
 
+        IEnumerator jumpTimer()
+        {
+
+            SetScaleXY(scaleX +0.01f, scaleY+0.01f);
+            bool down = false;
+            while (scaleX != scaleOG)
+            {
+                yield return new WaitForSeconds(0.01f);
+                if (scaleX < 1.6f && !down) SetScaleXY(scaleX + 0.01f, scaleY + 0.01f);
+
+                else
+                {
+                    down = true;
+                    SetScaleXY(scaleX - 0.01f, scaleY - 0.01f);
+                }
+            }
+            jumping = false;
+        }
+
         void OnCollision(GameObject other)
         {
-            if (other.GetType().Equals(typeof(Enemy)))
+            if (other.GetType().Equals(typeof(Enemy)) && !jumping)
             {
                 other.flagged = true;
                 lives -= 0.5f;
