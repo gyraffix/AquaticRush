@@ -15,7 +15,7 @@ namespace GXPEngine
        private int cols;
        private int rows;
        private List<int> toDestroy = new List<int>();
-
+        public bool start;
        private bool addCollider;
         private float playerSpeed;
         public float lives = 3;
@@ -45,31 +45,35 @@ namespace GXPEngine
 
         public void Update()
         {
+            if (start)
+            {
+            Console.WriteLine("buh");
             Move();
-            Shoot();
-            foreach (Bullet bullet in bullets)
-            {
-                bullet.Update();
-                if ( bullet.y < 0 || bullet.flagged)
-                { 
-                    toDestroy.Add(bullets.IndexOf(bullet));
+                Shoot();
+                foreach (Bullet bullet in bullets)
+                {
+                    bullet.Update();
+                    if (bullet.y < 0 || bullet.flagged)
+                    {
+                        toDestroy.Add(bullets.IndexOf(bullet));
+                    }
                 }
-            }
-            foreach (int index in toDestroy)
-            {
-                
-                bullets[index].LateDestroy();
-                bullets.RemoveAt(index);
-                
-                
-            }
-            toDestroy.Clear();
+                foreach (int index in toDestroy)
+                {
 
-            if (coolDown)
-            {
+                    bullets[index].LateDestroy();
+                    bullets.RemoveAt(index);
 
-                parent.AddChild(new Coroutine(shootCoolDown()));
-                coolDown = false;
+
+                }
+                toDestroy.Clear();
+
+                if (coolDown)
+                {
+
+                    parent.AddChild(new Coroutine(shootCoolDown()));
+                    coolDown = false;
+                }
             }
         }
         

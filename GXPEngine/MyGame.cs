@@ -15,6 +15,7 @@ public class MyGame : Game {
     private Sprite background;
 	private float backgroundSpeed = 1f;
 
+	private AnimationSprite beach;
 	private Player player;
 	private bool restart;
 	private Sprite enemyPlace;
@@ -37,18 +38,23 @@ public class MyGame : Game {
 
     public MyGame() : base(1366, 768, false)
 	{
+		targetFps = 60;
+        //TODO: implement Second background, immplement second fade.	
 
-		//TODO: implement Second background, immplement second fade.	
+        //TODO: implement Start menu (discuss menu design)
 
-		//TODO: implement Start menu (discuss menu design)
+        //TODO: implement sprites and animations (requires Sprites)
 
-		//TODO: implement sprites and animations (requires Sprites)
+        //TODO: implement powerups (Maybe? discuss powerups)
 
-		//TODO: implement powerups (Maybe? discuss powerups)
+        //TODO: implement jump move (maybe??)
 
-		//TODO: implement jump move (maybe??)
+        background = new Sprite("background.png", false, false);
+        background.SetXY(0, -height);
 
-		startScreen = new EasyDraw(width, height);
+        AddChild(background);
+
+        startScreen = new EasyDraw(width, height);
 		AddChild(startScreen);
 		startScreen.TextFont("minecraft.ttf", 40);
 		startScreen.Text("Press Space to Start", width/3.3f, height/2);
@@ -56,17 +62,26 @@ public class MyGame : Game {
         gameOverScreen = new EasyDraw(width, height);
         gameOverScreen.TextFont("minecraft.ttf", 40);
 		gameOverScreen.TextAlign(CenterMode.Center, CenterMode.Center);
-        
+
+
+        beach = new AnimationSprite("beach.png", 4, 2, -1, false, false);
+		AddChild(beach);
+
+        player = new Player("triangle.png", 1, 1);
+        AddChild(player);
+		
     }
 
     // For every game object, Update is called every frame, by the engine:
     void Update() 
 	{
-		
-		if (!gameOver)
+		beach.Animate(0.065f);
+        MoveBackground();
+
+        if (!gameOver)
 		{
-			MoveBackground();
-			player.Update();
+            
+            player.Update();
 			foreach (Enemy enemy in enemies)
 			{
 				enemy.Update();
@@ -108,30 +123,31 @@ public class MyGame : Game {
 	private void StartGame()
 	{
 
+        background.SetXY(background.x, ((int)background.y));
+        if (!restart) startScreen.Destroy();
 
-		if (!restart) startScreen.Destroy();
+		else
+		{
+			RemoveChild(gameOverScreen);
+			background = new Sprite("background.png", false, false);
+			background.SetXY(0, -height);
 
-		else RemoveChild(gameOverScreen);
-
-		background = new Sprite("background.png", false, false);
-		background.SetXY(0, -height);
-
-		AddChild(background);
-
+			AddChild(background);
+			AddChild(beach);
+			beach.SetXY(0, 0);
+            player = new Player("triangle.png", 1, 1);
+        }
+		
 		enemyPlace = new Sprite("square.png", false, false);
 		enemyPlace.alpha = 0;
 		AddChild(enemyPlace);
 
-        player = new Player("triangle.png", 1, 1);
 
         UI = new EasyDraw(width, 200, false);
-        AddChild(player);
+        if(restart) AddChild(player);
 
         AddChild(new Coroutine(enemyLoop()));
 		AddChild(new Coroutine(difficultyLoop()));
-
-
-        player.SetColor(0.5f, 0.1f, 0.1f);
 
         AddChild(UI);
         UI.TextFont(Utils.LoadFont("minecraft.ttf", 24));
@@ -139,6 +155,7 @@ public class MyGame : Game {
 		
 		gameOver = false;
         playerDestroyed = false;
+		player.start = true;
     }
 
 	private void GameOver()
@@ -170,10 +187,16 @@ public class MyGame : Game {
 		new MyGame().Start();                   // Create a "MyGame" and start it
 	}
 	private void MoveBackground()
-	{
-		background.Translate(0, backgroundSpeed);
-		if (background.y == 0) background.SetXY(0, -height);
-
+	{	
+		if (!gameOver)
+		{
+			beach.Translate(0, backgroundSpeed);
+			background.Translate(0, backgroundSpeed);
+		}
+		else background.Translate(0, backgroundSpeed/5);
+		
+        if (background.y == 0) background.SetXY(0, -height);
+		if (beach.y > height) RemoveChild(beach);
 		//background.alpha = Math.Max(1 - (difficulty - 1) / 2, 0); //TODO: transparent background.
 	}
 
