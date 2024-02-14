@@ -10,6 +10,9 @@ using System.Threading;
 
 public class MyGame : Game {
 
+	private Sprite background;
+	private float backgroundSpeed = 0.8f;
+
 	private Player player;
 	private List<Enemy> enemies = new List<Enemy>();
 	private Random rnd = new Random();
@@ -25,10 +28,8 @@ public class MyGame : Game {
 	public bool gameOver = true;
 	private bool playerDestroyed = true;
 
-    public MyGame() : base(1366, 768, false)     // Create a window that's 800x600 and NOT fullscreen
+    public MyGame() : base(1366, 768, false)
 	{
-
-		//TODO: implement increasing difficulty.
 
         //TODO: implement Start menu (discuss menu design)
 
@@ -51,6 +52,7 @@ public class MyGame : Game {
 		
 		if (!gameOver)
 		{
+			MoveBackground();
 			player.Update();
 			foreach (Enemy enemy in enemies)
 			{
@@ -73,7 +75,7 @@ public class MyGame : Game {
 
 			}
 			toDestroy.Clear();
-			UI.Clear(0);
+			UI.ClearTransparent();
 			UI.Text("Score: " + score, 25, 40);
 			UI.Text("Lives: " + Math.Floor(player.lives), width - 150, 40);
 
@@ -91,7 +93,12 @@ public class MyGame : Game {
     }
 
 	private void StartGame()
-	{ 
+	{
+
+		background = new Sprite("background.png", false, false);
+		background.SetXY(0, -height);
+
+		AddChild(background);
 		
         player = new Player("triangle.png", 1, 1);
 
@@ -135,7 +142,11 @@ public class MyGame : Game {
 	{
 		new MyGame().Start();                   // Create a "MyGame" and start it
 	}
-
+	private void MoveBackground()
+	{
+		background.Translate(0, backgroundSpeed);
+		if (background.y == 0) background.SetXY(0, -height);
+	}
 
 	IEnumerator enemyLoop()
 	{
