@@ -17,6 +17,7 @@ public class MyGame : Game {
 	private float enemyCooldown = 1.5f;
 	private bool timerStarted = false;
     private List<int> toDestroy = new List<int>();
+	public float difficulty = 1;
 	public int score { get; set; } = 0;
 	private int finalScore;
 	public EasyDraw UI;
@@ -27,27 +28,25 @@ public class MyGame : Game {
     public MyGame() : base(1366, 768, false)     // Create a window that's 800x600 and NOT fullscreen
 	{
 
-		//TODO: implement gameOver method.
+		//TODO: implement increasing difficulty.
 
-		//TODO: implement moving background. (requires background)
+        //TODO: implement Start menu (discuss menu design)
 
-		//TODO: implement Start menu (discuss menu design)
+        //TODO: implement moving background. (requires background)
 
-		//TODO: implement StartGame() method.
+        //TODO: implement sprites and animations (requires Sprites)
 
-		//TODO: implement sprites and animations (requires Sprites)
+        //TODO: implement powerups (Maybe? discuss powerups)
 
-		//TODO: implement powerups (Maybe? discuss powerups)
-
-		//TODO: implement jump move (maybe??)
+        //TODO: implement jump move (maybe??)
 
 
 
-		
-	}
 
-	// For every game object, Update is called every frame, by the engine:
-	void Update() 
+    }
+
+    // For every game object, Update is called every frame, by the engine:
+    void Update() 
 	{
 		
 		if (!gameOver)
@@ -61,7 +60,7 @@ public class MyGame : Game {
 				{
 					if (enemy.flagged)
 					{
-						score += 50;
+						changeScore(50);
 					}
 					toDestroy.Add(enemies.IndexOf(enemy));
 
@@ -78,7 +77,7 @@ public class MyGame : Game {
 			UI.Text("Score: " + score, 25, 40);
 			UI.Text("Lives: " + Math.Floor(player.lives), width - 150, 40);
 
-			if (player.lives < 3) gameOver = true;
+			if (player.lives < 1) gameOver = true;
 		}
 		else if (!playerDestroyed)
 		GameOver();
@@ -100,6 +99,7 @@ public class MyGame : Game {
         AddChild(player);
 
         AddChild(new Coroutine(enemyLoop()));
+		AddChild(new Coroutine(difficultyLoop()));
 
         player.SetColor(0.5f, 0.1f, 0.1f);
 
@@ -123,8 +123,13 @@ public class MyGame : Game {
             }
 		finalScore = score;
 		score = 0;
-        
+		difficulty = 1;
     }
+
+	public void changeScore(int change)
+	{
+		score += change;
+	}
 
 	static void Main()                          // Main() is the first method that's called when the program is run
 	{
@@ -143,9 +148,18 @@ public class MyGame : Game {
 				enemies.Add(newEnemy);
 				AddChild(newEnemy);
 
-			yield return new WaitForSeconds(enemyCooldown);
+			yield return new WaitForSeconds(enemyCooldown / difficulty);
 
 			
 		}
+    }
+
+	IEnumerator difficultyLoop() 
+	{
+		while (difficulty < 3)
+        {
+			yield return new WaitForSeconds(0.1f);
+            difficulty += 0.01f;
+        }
     }
 }
