@@ -18,41 +18,31 @@ public class MyGame : Game {
 	private bool timerStarted = false;
     private List<int> toDestroy = new List<int>();
 	public int score { get; set; } = 0;
+	private int finalScore;
 	public EasyDraw UI;
+
+	public bool gameOver = true;
+	private bool playerDestroyed = true;
 
     public MyGame() : base(1366, 768, false)     // Create a window that's 800x600 and NOT fullscreen
 	{
 
+		//TODO: implement gameOver method.
 
-		//TODO: add player collission
-
-        //TODO: implement moving background. (requires background)
-
-        //TODO: implement gameOver variable, condition and method.
+		//TODO: implement moving background. (requires background)
 
 		//TODO: implement Start menu (discuss menu design)
 
-		//TODO: implement sprites (requires Sprites)
+		//TODO: implement StartGame() method.
 
-		//TODO: implement powerups (discuss powerups)
+		//TODO: implement sprites and animations (requires Sprites)
+
+		//TODO: implement powerups (Maybe? discuss powerups)
 
 		//TODO: implement jump move (maybe??)
 
 
 
-        player = new Player("triangle.png", 1, 1);
-
-        UI = new EasyDraw(width, 200, false);
-        AddChild(player);
-		
-		AddChild(new Coroutine(enemyLoop()));
-
-		player.SetColor(0.5f, 0.1f, 0.1f);
-
-		AddChild(UI);
-		UI.TextFont(Utils.LoadFont("minecraft.ttf", 24));
-		UI.Fill(255,255,255);
-		
 		
 	}
 
@@ -60,31 +50,80 @@ public class MyGame : Game {
 	void Update() 
 	{
 		
-		player.Update();
-		foreach(Enemy enemy in enemies)
+		if (!gameOver)
 		{
-			enemy.Update();
-
-			if (enemy.y > height || enemy.flagged)
+			player.Update();
+			foreach (Enemy enemy in enemies)
 			{
-				if (enemy.flagged)
+				enemy.Update();
+
+				if (enemy.y > height || enemy.flagged)
 				{
-					score += 50;
+					if (enemy.flagged)
+					{
+						score += 50;
+					}
+					toDestroy.Add(enemies.IndexOf(enemy));
+
 				}
-				toDestroy.Add(enemies.IndexOf(enemy));
-				
+			}
+			foreach (int index in toDestroy)
+			{
+				enemies[index].LateDestroy();
+				enemies.RemoveAt(index);
+
+			}
+			toDestroy.Clear();
+			UI.Clear(0);
+			UI.Text("Score: " + score, 25, 40);
+			UI.Text("Lives: " + Math.Floor(player.lives), width - 150, 40);
+
+			if (player.lives < 3) gameOver = true;
+		}
+		else if (!playerDestroyed)
+		GameOver();
+		else
+		{
+			if (Input.GetKeyDown(Key.SPACE))
+			{
+				StartGame();
 			}
 		}
-        foreach (int index in toDestroy)
-        {
-            enemies[index].LateDestroy();
-			enemies.RemoveAt(index);
+    }
 
-        }
-		toDestroy.Clear();
-        UI.Clear(0);
-        UI.Text("Score: " + score, 25, 40);
-		UI.Text("Lives: " + Math.Floor(player.lives), width - 150, 40);
+	private void StartGame()
+	{ 
+		
+        player = new Player("triangle.png", 1, 1);
+
+        UI = new EasyDraw(width, 200, false);
+        AddChild(player);
+
+        AddChild(new Coroutine(enemyLoop()));
+
+        player.SetColor(0.5f, 0.1f, 0.1f);
+
+        AddChild(UI);
+        UI.TextFont(Utils.LoadFont("minecraft.ttf", 24));
+        UI.Fill(255, 255, 255);
+		
+		gameOver = false;
+        playerDestroyed = false;
+    }
+
+	private void GameOver()
+	{
+
+			player.LateDestroy();
+			playerDestroyed = true;
+			RemoveChild(player);
+            foreach (GameObject obj in GetChildren())
+            {
+                RemoveChild(obj);
+            }
+		finalScore = score;
+		score = 0;
+        
     }
 
 	static void Main()                          // Main() is the first method that's called when the program is run
@@ -95,7 +134,7 @@ public class MyGame : Game {
 
 	IEnumerator enemyLoop()
 	{
-		while (true)
+		while (!gameOver)
 		{
 
 				Enemy newEnemy = new Enemy("square.png", 1, 1, rnd.Next(width));

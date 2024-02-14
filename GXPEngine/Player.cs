@@ -38,17 +38,18 @@ namespace GXPEngine
 
             this.addCollider = addCollider;
             SetXY(game.width/2 - 25, game.height - 100);
+            SetOrigin(width / 2, height / 2);
         }
 
         public void Update()
         {
-            SetOrigin(width/2, height/2);
+            
             Move();
             Shoot();
             foreach (Bullet bullet in bullets)
             {
                 bullet.Update();
-                if ( /*bullet.y < 0 ||*/ bullet.flagged)
+                if ( bullet.y < 0 || bullet.flagged)
                 {
                     
                     
@@ -104,7 +105,11 @@ namespace GXPEngine
                 }
 
             }
-
+            else if (rotation != 0)
+            {
+                if (rotation < 0) Turn(1);
+                else Turn(-1);
+            }
             
 
             if (rotating)
@@ -184,7 +189,7 @@ namespace GXPEngine
             if (other.GetType().Equals(typeof(Enemy)))
             {
                 other.flagged = true;
-                lives -= 0.5f ;
+                lives -= 0.5f;
             }
         }
     }
