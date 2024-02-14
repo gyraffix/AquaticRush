@@ -13,30 +13,40 @@ namespace GXPEngine
         private string filename;
         private bool addCollider;
         private float bulletSpeed = 2;
+        private float trajectory;
         
         
         
 
-        public Bullet(string filename,float startX, float startY, bool keepInCache = false, bool addCollider = true) : base(filename, keepInCache, addCollider)
+        public Bullet(string filename,float startX, float startY, float rotation, bool keepInCache = false, bool addCollider = true) : base(filename, keepInCache, addCollider)
         {
             this.filename = filename;
             this.addCollider = addCollider;
             x = startX - (width* 0.2f)/2;
             y = startY;
+            trajectory = rotation;
             Console.WriteLine("bullet created");
             scale = 0.2f;
         }
 
         public void Update()
         {
-            y -= bulletSpeed;
+            if (trajectory == 0)
+            {
+                y -= bulletSpeed;
+            }
+            else
+            {
+                y -= bulletSpeed / (1 + Math.Abs(trajectory));
+                x += trajectory;
+            }
 
             
         }
 
         void OnCollision(GameObject other)
         {
-            if (other != FindObjectOfType<Player>())
+            if (!other.GetType().Equals(typeof(Player)))
             {
                 flagged = true;
                 other.flagged = true;

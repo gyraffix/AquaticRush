@@ -20,19 +20,35 @@ public class MyGame : Game {
 	public int score { get; set; } = 0;
 	public EasyDraw UI;
 
-    public MyGame() : base(800, 600, false)     // Create a window that's 800x600 and NOT fullscreen
+    public MyGame() : base(1366, 768, false)     // Create a window that's 800x600 and NOT fullscreen
 	{
-		
 
-		
-		player = new Player("triangle.png", 1, 1);
+		//TODO: add bullet trajectories
+
+		//TODO: add player collission
+
+        //TODO: implement moving background. (requires background)
+
+        //TODO: implement gameOver variable, condition and method.
+
+		//TODO: implement Start menu (discuss menu design)
+
+		//TODO: implement sprites (requires Sprites)
+
+		//TODO: implement powerups (discuss powerups)
+
+		//TODO: implement jump move (maybe??)
+
+
+
+        player = new Player("triangle.png", 1, 1);
 
         UI = new EasyDraw(800, 200, false);
         AddChild(player);
 		
 		AddChild(new Coroutine(enemyLoop()));
 
-
+		player.SetColor(0.5f, 0.1f, 0.1f);
 
 		AddChild(UI);
 		UI.TextFont(Utils.LoadFont("minecraft.ttf", 24));
@@ -82,7 +98,7 @@ public class MyGame : Game {
 		while (true)
 		{
 
-				Enemy newEnemy = new Enemy("square.png", 1, 1, rnd.Next(800));
+				Enemy newEnemy = new Enemy("square.png", 1, 1, rnd.Next(width));
 				Console.WriteLine("enemy created");
 
 				enemies.Add(newEnemy);

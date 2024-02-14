@@ -19,8 +19,10 @@ namespace GXPEngine
        private bool addCollider;
         private float playerSpeed;
         
-        private float posY = 500;
+        
 
+        private float rotateSpeed;
+        private bool rotating;
         private bool moving;
         private bool coolDown;
         private bool canShoot = true;
@@ -36,12 +38,12 @@ namespace GXPEngine
             
 
             this.addCollider = addCollider;
-            SetXY(game.width/2 - 25, posY);
+            SetXY(game.width/2 - 25, game.height - 100);
         }
 
         public void Update()
         {
-
+            SetOrigin(width/2, height/2);
             Move();
             Shoot();
             foreach (Bullet bullet in bullets)
@@ -78,12 +80,13 @@ namespace GXPEngine
         void Move()
         {
             moving = false;
+            rotating = false;
 
-            if (Input.GetKey(Key.LEFT))
+            if (Input.GetKey(Key.A))
             {
                 Walk(-1);
             }
-            if (Input.GetKey(Key.RIGHT)) 
+            if (Input.GetKey(Key.D)) 
             {  
                 Walk(1); 
             }
@@ -94,9 +97,32 @@ namespace GXPEngine
                 {
                     x = 0;
                 }
-                else if (playerSpeed > 0 && x > 735)
+                else if (playerSpeed > 0 && x > game.width - 65)
                 {
                     x = 735;
+                }
+
+            }
+
+            if (Input.GetKey(Key.LEFT))
+            {
+                Rotate(-1);
+            }
+            if (Input.GetKey(Key.RIGHT))
+            {
+                Rotate(1);
+            }
+
+            if (rotating)
+            {
+                Turn(rotateSpeed);
+                if ( rotation < -45)
+                {
+                    rotation = -45;
+                }
+                else if (rotation > 45)
+                {
+                    rotation = 45;
                 }
 
             }
@@ -124,11 +150,26 @@ namespace GXPEngine
             }
         }
 
+        private void Rotate(int Direction)
+        {
+            if (Direction < 0)
+            {
+
+                rotateSpeed = -1;
+                rotating = true;
+            }
+            else
+            {
+                rotateSpeed = 1;
+                rotating = true;
+            }
+        }
+
         void Shoot()
         {
             if (Input.GetKeyDown(Key.SPACE) && canShoot)
             {
-                Bullet newBullet = new Bullet("circle.png", x + width/2, y - 25);
+                Bullet newBullet = new Bullet("circle.png", x, y, rotation/45);
                 parent.AddChild(newBullet);
                 bullets.Add(newBullet);
                 Console.WriteLine("there are currently " + bullets.Count + " bullets");

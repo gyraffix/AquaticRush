@@ -25,7 +25,7 @@ namespace GXPEngine
             if (!enumerator.MoveNext())
             {
                 Destroy();
-                Console.WriteLine("Coroutine done: destroying Coroutine game object");
+                Console.WriteLine("Coroutine done");
                 Done = true;
             }
             else
@@ -53,7 +53,7 @@ namespace GXPEngine
             }
             else
             {
-                Console.WriteLine("Coroutine error: return type not supported: " + item.GetType());
+                Console.WriteLine("Coroutine error: type not supported: " + item.GetType());
                 Step();
             }
         }
