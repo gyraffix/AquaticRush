@@ -1,29 +1,31 @@
 using System;                                   // System contains a lot of default C# libraries 
 using GXPEngine;                                // GXPEngine contains the engine
-using System.Drawing;
+using System.Drawing;							// System.Drawing contains drawing tools such as Color definitions
 using System.Media;
 using System.Drawing.Text;
 using System.Collections.Generic;
 using System.Collections;
 using System.Threading;
-// System.Drawing contains drawing tools such as Color definitions
+
 
 public class MyGame : Game {
 
     private Random rnd = new Random();
 
     private Sprite background;
+	private Sprite background1;
 	private float backgroundSpeed = 1f;
 
 	private AnimationSprite beach;
 	private Player player;
-	private bool restart;
+
 	private Sprite enemyPlace;
 	private List<Enemy> enemies = new List<Enemy>();
 	private bool spawnEnemy = false;
 	private float enemyCooldown = 1.5f;
-	private bool timerStarted = false;
+
     private List<int> toDestroy = new List<int>();
+
 	private EasyDraw startScreen;
 	private EasyDraw gameOverScreen;
 
@@ -33,23 +35,27 @@ public class MyGame : Game {
 
 	public EasyDraw UI;
 
-	public bool gameOver = true;
+    private bool restart;
+    public bool gameOver = true;
 	private bool playerDestroyed = true;
 
     public MyGame() : base(1366, 768, false)
 	{
 		targetFps = 60;
-        //TODO: implement Second background, second fade.	
-
-		//TODO: Better Start menu.
+ 
+        //TODO: Better Start menu.
 
         //TODO: implement sprites and animations (requires Sprites)
 
         //TODO: implement powerups (Maybe? discuss powerups)
 
+        //TODO: Collectibles? (Something like coins maybe)
+
+        background1 = new Sprite("background1.png", false, false);
+        background1.SetXY(0, -height);
         background = new Sprite("background.png", false, false);
         background.SetXY(0, -height);
-
+		AddChild(background1);
         AddChild(background);
 
         startScreen = new EasyDraw(width, height);
@@ -63,6 +69,7 @@ public class MyGame : Game {
 
 
         beach = new AnimationSprite("beach.png", 4, 2, -1, false, false);
+		beach.SetCycle(0,8,12);
 		AddChild(beach);
 
         player = new Player("triangle.png", 1, 1);
@@ -73,7 +80,7 @@ public class MyGame : Game {
     // For every game object, Update is called every frame, by the engine:
     void Update() 
 	{
-		beach.Animate(0.065f);
+		beach.Animate();
         MoveBackground();
 
         if (!gameOver)
@@ -120,17 +127,19 @@ public class MyGame : Game {
 
 	private void StartGame()
 	{
-
+        background1.SetXY(background1.x, ((int)background1.y));
         background.SetXY(background.x, ((int)background.y));
         if (!restart) startScreen.Destroy();
 
 		else
 		{
 			RemoveChild(gameOverScreen);
-			background = new Sprite("background.png", false, false);
+			
 			background.SetXY(0, -height);
+            background1.SetXY(0, -height);
 
-			AddChild(background);
+			AddChild(background1);
+            AddChild(background);
 			AddChild(beach);
 			beach.SetXY(0, 0);
             player = new Player("triangle.png", 1, 1);
@@ -185,18 +194,29 @@ public class MyGame : Game {
 		new MyGame().Start();                   // Create a "MyGame" and start it
 	}
 	private void MoveBackground()
-	{	
+	{
 		if (!gameOver)
 		{
 			beach.Translate(0, backgroundSpeed);
 			background.Translate(0, backgroundSpeed);
+			background1.Translate(0, backgroundSpeed);
 		}
-		else background.Translate(0, backgroundSpeed/5);
-		
-        if (background.y == 0) background.SetXY(0, -height);
-		if (beach.y > height) RemoveChild(beach);
-		//background.alpha = Math.Max(1 - (difficulty - 1) / 2, 0); //TODO: transparent background.
-	}
+		else
+		{
+			background1.Translate(0, backgroundSpeed / 5);
+            background.Translate(0, backgroundSpeed / 5);
+        }
+
+		if (background.y == 0)
+		{
+			background.SetXY(0, -height);
+            background1.SetXY(0, -height);
+
+        }
+        if (beach.y > height) RemoveChild(beach);
+		background.alpha = Math.Max(1 - (difficulty - 1) / 2, 0);
+        background1.alpha = Math.Min(0 + (difficulty - 1) / 2, 1);
+    }
 
 	IEnumerator enemyLoop()
 	{
@@ -221,7 +241,7 @@ public class MyGame : Game {
 	{
 		while (difficulty < 3)
         {
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.1f);
             difficulty += 0.01f;
         }
     }

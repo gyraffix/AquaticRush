@@ -47,7 +47,6 @@ namespace GXPEngine
         {
             if (start)
             {
-            Console.WriteLine("buh");
             Move();
                 Shoot();
                 foreach (Bullet bullet in bullets)
@@ -225,8 +224,8 @@ namespace GXPEngine
         {
             if (other.GetType().Equals(typeof(Enemy)) && !jumping)
             {
-                other.flagged = true;
-                lives -= 0.5f;
+                other.LateRemove(); ;
+                lives -= 1;
             }
         }
     }
