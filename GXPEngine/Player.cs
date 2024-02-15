@@ -111,8 +111,8 @@ namespace GXPEngine
             }
             else if (rotation != 0)
             {
-                if (rotation < 0) Turn(1);
-                else Turn(-1);
+                if (rotation < 0) Turn(2);
+                else Turn(-2);
             }
             
 
@@ -137,13 +137,13 @@ namespace GXPEngine
             if (Direction < 0)
             {
 
-                playerSpeed = -1;
+                playerSpeed = -1.5f;
                 moving = true;
                 Mirror(true, false);
             }
             else
             {
-                playerSpeed = 1;
+                playerSpeed = 1.5f;
                 moving = true;
                 Mirror(false, false);
             }

@@ -43,6 +43,14 @@ public class MyGame : Game {
 	{
 		targetFps = 60;
  
+		//TODO: Faster player.
+
+		//TODO: Fix Shooting Forward.
+
+		//TODO: Shoot bar.
+
+		//TODO: Hit feedback.
+
         //TODO: Better Start menu.
 
         //TODO: implement sprites and animations (requires Sprites)
@@ -71,6 +79,10 @@ public class MyGame : Game {
         beach = new AnimationSprite("beach.png", 4, 2, -1, false, false);
 		beach.SetCycle(0,8,12);
 		AddChild(beach);
+
+        enemyPlace = new Sprite("square.png", false, false);
+        enemyPlace.alpha = 0;
+        AddChild(enemyPlace);
 
         player = new Player("triangle.png", 1, 1);
         AddChild(player);
@@ -141,14 +153,12 @@ public class MyGame : Game {
 			AddChild(background1);
             AddChild(background);
 			AddChild(beach);
-			beach.SetXY(0, 0);
+            AddChild(enemyPlace);
+            beach.SetXY(0, 0);
             player = new Player("triangle.png", 1, 1);
         }
-		
-		enemyPlace = new Sprite("square.png", false, false);
-		enemyPlace.alpha = 0;
-		AddChild(enemyPlace);
 
+        
 
         UI = new EasyDraw(width, 200, false);
         if(restart) AddChild(player);
