@@ -39,15 +39,13 @@ public class MyGame : Game {
     public MyGame() : base(1366, 768, false)
 	{
 		targetFps = 60;
-        //TODO: implement Second background, immplement second fade.	
+        //TODO: implement Second background, second fade.	
 
-        //TODO: implement Start menu (discuss menu design)
+		//TODO: Better Start menu.
 
         //TODO: implement sprites and animations (requires Sprites)
 
         //TODO: implement powerups (Maybe? discuss powerups)
-
-        //TODO: implement jump move (maybe??)
 
         background = new Sprite("background.png", false, false);
         background.SetXY(0, -height);
