@@ -6,6 +6,7 @@ using System.Drawing.Text;
 using System.Collections.Generic;
 using System.Collections;
 using System.Threading;
+using System.Security.Cryptography;
 
 
 public class MyGame : Game {
@@ -35,6 +36,8 @@ public class MyGame : Game {
 
 	public EasyDraw UI;
 
+	public String[] enemyList = new string[5];
+
     private bool restart;
     public bool gameOver = true;
 	private bool playerDestroyed = true;
@@ -42,18 +45,10 @@ public class MyGame : Game {
     public MyGame() : base(1366, 768, false)
 	{
 		targetFps = 60;
- 
-		//TODO: Faster player.
-
-		//TODO: Fix Shooting Forward.
-
-		//TODO: Shoot bar.
-
-		//TODO: Hit feedback.
 
         //TODO: Better Start menu.
 
-        //TODO: implement sprites and animations (requires Sprites)
+		//TODO: Make text stand out more.
 
         //TODO: implement powerups (Maybe? discuss powerups)
 
@@ -66,6 +61,8 @@ public class MyGame : Game {
 		AddChild(background1);
         AddChild(background);
 
+        UI = new EasyDraw(width, height, false);
+
         startScreen = new EasyDraw(width, height);
 		AddChild(startScreen);
 		startScreen.TextFont("minecraft.ttf", 40);
@@ -75,16 +72,20 @@ public class MyGame : Game {
         gameOverScreen.TextFont("minecraft.ttf", 40);
 		gameOverScreen.TextAlign(CenterMode.Center, CenterMode.Center);
 
-
+		enemyList[0] = "shark.png";
+		enemyList[1] = "wood.png";
+		enemyList[2] = "tentacle.png";
+		enemyList[3] = "rock.png";
+		enemyList[4] = "rock1.png";
         beach = new AnimationSprite("beach.png", 4, 2, -1, false, false);
 		beach.SetCycle(0,8,12);
 		AddChild(beach);
 
-        enemyPlace = new Sprite("square.png", false, false);
+        enemyPlace = new Sprite("shark.png", false, false);
         enemyPlace.alpha = 0;
         AddChild(enemyPlace);
 
-        player = new Player("triangle.png", 1, 1);
+        player = new Player("jetski.png", 1, 1, this);
         AddChild(player);
 		
     }
@@ -103,9 +104,9 @@ public class MyGame : Game {
 			{
 				enemy.Update();
 
-				if (enemy.y > height || enemy.flagged)
+				if (enemy.y > height || (enemy.flagged && enemy.breakable))
 				{
-					if (enemy.flagged)
+					if (enemy.flagged && enemy.breakable)
 					{
 						changeScore(50);
 					}
@@ -121,8 +122,8 @@ public class MyGame : Game {
 			}
 			toDestroy.Clear();
 			UI.ClearTransparent();
-			UI.Text("Score: " + score, 25, 40);
-			UI.Text("Lives: " + Math.Floor(player.lives), width - 150, 40);
+			UI.Text("Score: " + score, 25, 60);
+			UI.Text("Lives: " + Math.Floor(player.lives), width - 225, 60);
 
 			if (player.lives < 1) gameOver = true;
 		}
@@ -146,29 +147,35 @@ public class MyGame : Game {
 		else
 		{
 			RemoveChild(gameOverScreen);
-			
-			background.SetXY(0, -height);
+
+            UI = new EasyDraw(width, 200, false);
+
+            background.SetXY(0, -height);
             background1.SetXY(0, -height);
 
 			AddChild(background1);
             AddChild(background);
 			AddChild(beach);
+            enemyPlace = new Sprite("shark.png", false, false);
+            enemyPlace.alpha = 0;
+            
             AddChild(enemyPlace);
             beach.SetXY(0, 0);
-            player = new Player("triangle.png", 1, 1);
+            player = new Player("jetski.png", 1, 1, this);
+			AddChild(player);
         }
 
         
 
         UI = new EasyDraw(width, 200, false);
-        if(restart) AddChild(player);
+        
 
         AddChild(new Coroutine(enemyLoop()));
 		AddChild(new Coroutine(difficultyLoop()));
 
         AddChild(UI);
-        UI.TextFont(Utils.LoadFont("minecraft.ttf", 24));
-        UI.Fill(255, 255, 255);
+        UI.TextFont(Utils.LoadFont("minecraft.ttf", 36));
+        UI.Fill(0);
 		
 		gameOver = false;
         playerDestroyed = false;
@@ -185,6 +192,10 @@ public class MyGame : Game {
         foreach (GameObject obj in GetChildren())
         {
 			RemoveChild(obj);
+			if(obj.GetType().Equals(typeof(Enemy)))
+			{
+				obj.LateDestroy();
+			}
         }
 		finalScore = score;
         Console.WriteLine(finalScore);
@@ -232,12 +243,49 @@ public class MyGame : Game {
 	{
 		while (!gameOver)
 		{
+			int randomNumber = rnd.Next(5);
+            switch(randomNumber)
+			{
+				case 0:
+					{
+						Enemy newEnemy = new Enemy(enemyList[randomNumber], 5, 4, 18);
+                        enemies.Add(newEnemy);
+                        enemyPlace.AddChild(newEnemy);
+                        break;
+					}
+                case 1:
+                    {
+                        Enemy newEnemy = new Enemy(enemyList[randomNumber], 2, 2);
+                        enemies.Add(newEnemy);
+                        enemyPlace.AddChild(newEnemy);
+                        break;
+                    }
+                case 2:
+                    {
+                        Enemy newEnemy = new Enemy(enemyList[randomNumber], 5, 3);
+                        enemies.Add(newEnemy);
+                        enemyPlace.AddChild(newEnemy);
+                        break;
+                    }
+                case 3:
+                    {
+                        Enemy newEnemy = new Enemy(enemyList[randomNumber], 2, 2);
+                        enemies.Add(newEnemy);
+                        enemyPlace.AddChild(newEnemy);
+                        break;
+                    }
+                case 4:
+                    {
+                        Enemy newEnemy = new Enemy(enemyList[randomNumber], 2, 2);
+                        enemies.Add(newEnemy);
+                        enemyPlace.AddChild(newEnemy);
+                        break;
+                    }
+            }
+            
+				Console.WriteLine(difficulty);
 
-				Enemy newEnemy = new Enemy("square.png", 1, 1, rnd.Next(width));
-				Console.WriteLine("enemy created");
-
-				enemies.Add(newEnemy);
-				enemyPlace.AddChild(newEnemy);
+				
 
 			yield return new WaitForSeconds(enemyCooldown / difficulty);
 
@@ -255,4 +303,6 @@ public class MyGame : Game {
             difficulty += 0.01f;
         }
     }
+
+
 }

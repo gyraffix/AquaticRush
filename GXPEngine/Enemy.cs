@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,28 +10,71 @@ namespace GXPEngine
 {
     internal class Enemy : AnimationSprite
     {
-
-        private string filename;
-        private int cols;
-        private int rows;
-        
+        private Random rnd = new Random();
+        private int enemyType;
         private float enemySpeed = 0.5f;
-        private bool addCollider;
-
-        public Enemy(String filename, int cols, int rows, float startX, int frames = -1, bool addCollider = true) : base(filename, cols, rows, frames, addCollider)
+        public bool breakable = true;
+        private bool left;
+        private float startX;
+        public Enemy(String filename, int cols, int rows, int frames = -1, bool addCollider = true) : base(filename, cols, rows, frames, addCollider)
         {
-            this.filename = filename;
-            this.cols = cols;
-            this.rows = rows;
-            x = startX;
-            y = -50;
+            
+            if (filename.Equals("shark.png")) 
+            { 
+                enemyType = 0;
+                Mirror(false, true);
+                scale = 0.75f;
+                SetCycle(0, 18, 15);
+                enemySpeed = 0.75f;
+            }
+            if (filename.Equals("wood.png") || filename.Equals("rock.png") || filename.Equals("rock1.png")) 
+            { 
+                enemyType = 1;
+                SetCycle(0, 4, 15);
+                breakable = false;
+            }
+            if (filename.Equals("tentacle.png")) 
+            { 
+                enemyType = 2;
+                SetCycle(0, 7, 18);
+            }
+            x = rnd.Next(game.width);
+            startX = x;
+            y = -200;
 
-            this.addCollider = addCollider;
+            
         }
 
         public void Update()
         {
+            Animate();
             y += enemySpeed;
+            if (enemyType == 2)
+            {
+                if (x > startX + width)
+                {
+                    left = true;
+                    x = startX + width;
+                }
+                else if (x < startX - width)
+                {
+                    left = false;
+                    x = startX - width;
+                }
+                if (left) { x -= enemySpeed; }
+                else { x += enemySpeed; }
+            }
+            
+        }
+
+        void OnCollision(GameObject other)
+        {
+            if (enemyType == 1 && other.GetType().Equals(typeof(Enemy)))
+            {
+                other.LateRemove();
+            }
+
+            
         }
 
     }

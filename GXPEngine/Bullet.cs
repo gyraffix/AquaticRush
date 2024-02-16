@@ -38,7 +38,7 @@ namespace GXPEngine
             else
             {
                 y -= bulletSpeed / (1 + Math.Abs(trajectory));
-                x += trajectory;
+                x += 2*trajectory;
             }
 
             

@@ -5,18 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Collections;
+using System.ComponentModel;
 
 namespace GXPEngine
 {
     public class Player : AnimationSprite
     {
 
-       private string filename;
-       private int cols;
-       private int rows;
        private List<int> toDestroy = new List<int>();
         public bool start;
-       private bool addCollider;
+
+
+
         private float playerSpeed;
         public float lives = 3;
         public float scaleOG;
@@ -24,30 +24,38 @@ namespace GXPEngine
         private bool rotating;
         private bool moving;
         private bool jumping;
+        private bool hit;
+        
         private bool canJump = true;
         private bool coolDown;
         private bool canShoot = true;
 
+        private EasyDraw playerUI;
+        private bool addUI;
+
+        private MyGame game1;
         private List<Bullet> bullets = new List<Bullet>();
 
 
-       public Player(string filename, int cols, int rows, int frames = -1, bool addCollider = true) : base(filename, cols, rows, frames, addCollider)
+        public Player(string filename, int cols, int rows, MyGame game, int frames = -1, bool addCollider = true) : base(filename, cols, rows, frames, addCollider)
         {
-            this.filename = filename;
-            this.cols = cols;
-            this.rows = rows;
-
             scaleOG = scale;
-            this.addCollider = addCollider;
-            SetXY(game.width/2 - 25, game.height - 100);
-            SetOrigin(width / 2, height / 2);
-        }
+            game1 = game;
 
+            SetXY(game.width/2 , game.height - 100);
+            SetOrigin(width / 2, height / 2);
+            SetScaleXY(0.06f, 0.06f);
+            playerUI = new EasyDraw(game.width, game.height, false);
+        }
+        
         public void Update()
         {
+
+
             if (start)
             {
-            Move();
+                
+                Move();
                 Shoot();
                 foreach (Bullet bullet in bullets)
                 {
@@ -99,7 +107,7 @@ namespace GXPEngine
             if (moving)
             {
                 Translate(playerSpeed, 0);
-                if (playerSpeed < 0 &&  x < 0) 
+                if (playerSpeed < 0 && x < 0)
                 {
                     x = 0;
                 }
@@ -111,25 +119,35 @@ namespace GXPEngine
             }
             else if (rotation != 0)
             {
-                if (rotation < 0) Turn(2);
-                else Turn(-2);
-            }
-            
+                if (rotation < 0)
+                {
+                    Turn(2);
 
+                }
+                else
+                {
+                    Turn(-2);
+
+                }
+
+            }
             if (rotating)
             {
                 Turn(rotateSpeed);
-                if ( rotation < -45)
+
+                if (rotation < -45)
                 {
                     rotation = -45;
+
                 }
                 else if (rotation > 45)
                 {
                     rotation = 45;
+
                 }
 
             }
-
+            
         }
 
         private void Walk(int Direction)
@@ -178,6 +196,7 @@ namespace GXPEngine
         {
             if (Input.GetKeyDown(Key.SPACE) && canShoot)
             {
+                if (!addUI) parent.AddChild(playerUI);
                 Bullet newBullet = new Bullet("circle.png", x, y, rotation/45);
                 parent.AddChild(newBullet);
                 bullets.Add(newBullet);
@@ -190,10 +209,19 @@ namespace GXPEngine
 
         IEnumerator shootCoolDown()
         {
-            yield return new WaitForSeconds(0.5f);
+            
+            for (int i = 0; i < 50; i++)
+            {
+                
+                yield return new WaitForSeconds(0.01f);
+
+                playerUI.Fill(255, 0, 0);
+                playerUI.Rect(game.width/2, game.height - 40, i*2, 10);
+            }
+            playerUI.ClearTransparent();
             canShoot = true;
         }
-
+        
         IEnumerator jumpTimer()
         {
 
@@ -220,12 +248,26 @@ namespace GXPEngine
             canJump = true;
         }
 
+        IEnumerator hitFeedback()
+        {
+            hit = true;
+            for (int i = 0; i < 3; i++)
+            {
+                alpha = 0;
+                yield return new WaitForSeconds(0.3f);
+                alpha = 1;
+                yield return new WaitForSeconds(0.3f);
+            }
+            hit = false;
+        }
+
         void OnCollision(GameObject other)
         {
-            if (other.GetType().Equals(typeof(Enemy)) && !jumping)
+            if (other.GetType().Equals(typeof(Enemy)) && !jumping && !hit)
             {
-                other.LateRemove(); ;
+                other.LateRemove();
                 lives -= 1;
+                LateAddChild(new Coroutine(hitFeedback()));
             }
         }
     }
