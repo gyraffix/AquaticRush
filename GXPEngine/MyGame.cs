@@ -299,7 +299,7 @@ public class MyGame : Game {
 	{
 		while (difficulty < 3)
         {
-			yield return new WaitForSeconds(0.01f);
+			yield return new WaitForSeconds(0.5f);
             difficulty += 0.01f;
         }
     }
