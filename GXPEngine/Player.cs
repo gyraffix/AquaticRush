@@ -101,7 +101,7 @@ namespace GXPEngine
             }
             if(Input.GetKeyDown(Key.W) && !jumping)
             {
-                Jump();
+                //Jump();
             }
 
             if (moving)

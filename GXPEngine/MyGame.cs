@@ -248,7 +248,7 @@ public class MyGame : Game {
 			{
 				case 0:
 					{
-						Enemy newEnemy = new Enemy(enemyList[randomNumber], 5, 4, 18);
+						Enemy newEnemy = new Enemy(enemyList[randomNumber], 5, 5, 18);
                         enemies.Add(newEnemy);
                         enemyPlace.AddChild(newEnemy);
                         break;

@@ -22,9 +22,8 @@ namespace GXPEngine
             if (filename.Equals("shark.png")) 
             { 
                 enemyType = 0;
-                Mirror(false, true);
                 scale = 0.75f;
-                SetCycle(0, 18, 15);
+                SetCycle(0, 17, 15);
                 enemySpeed = 0.75f;
             }
             if (filename.Equals("wood.png") || filename.Equals("rock.png") || filename.Equals("rock1.png")) 
