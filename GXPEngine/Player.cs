@@ -99,7 +99,7 @@ namespace GXPEngine
                 Walk(1); 
                 Rotate(1);
             }
-            if(Input.GetKeyDown(Key.LEFT_SHIFT) && !jumping)
+            if(Input.GetKeyDown(Key.W) && !jumping)
             {
                 Jump();
             }
