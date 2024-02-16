@@ -128,7 +128,7 @@ public class MyGame : Game {
 			if (player.lives < 1) gameOver = true;
 		}
 		else if (!playerDestroyed)
-		GameOver();
+		GameOver(); //Death is inevitable 8(
 		else
 		{
 			if (Input.GetKeyDown(Key.SPACE))
@@ -299,7 +299,7 @@ public class MyGame : Game {
 	{
 		while (difficulty < 3)
         {
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.01f);
             difficulty += 0.01f;
         }
     }
