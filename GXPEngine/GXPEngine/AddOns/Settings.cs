@@ -94,6 +94,7 @@ namespace GXPEngine {
 		// enter:
 		public static int Menu=294;
 
+		public static int highScore;
 		/// <summary>
 		/// Load new values from the file settings.txt
 		/// </summary>

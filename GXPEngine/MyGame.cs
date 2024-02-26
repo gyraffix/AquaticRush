@@ -47,13 +47,15 @@ public class MyGame : Game {
 	{
 		targetFps = 60;
 
-        //TODO: Better Start menu.
+		//TODO: Better Start menu.
 
 		//TODO: Make text stand out more.
 
-        //TODO: implement powerups (Maybe? discuss powerups)
+		//TODO: implement powerups (Maybe? discuss powerups)
 
-        //TODO: Collectibles? (Something like coins maybe)
+		//TODO: Collectibles? (Something like coins maybe)
+
+		Settings.Load();
 
         background1 = new Sprite("background1.png", false, false);
         background1.SetXY(0, -height);
@@ -196,6 +198,7 @@ public class MyGame : Game {
 		gameOver = false;
         playerDestroyed = false;
 		player.start = true;
+		
     }
 
 	private void GameOver()
@@ -205,6 +208,10 @@ public class MyGame : Game {
 		player.LateDestroy();
 		playerDestroyed = true;
 		RemoveChild(player);
+		if (score > Settings.highScore)
+		{
+			Settings.highScore = score;
+		}
         foreach (GameObject obj in GetChildren())
         {
 			RemoveChild(obj);
@@ -219,6 +226,7 @@ public class MyGame : Game {
 		multiplier = 1;
 		difficulty = 1;
 		AddChild(gameOverScreen);
+        Console.WriteLine(Settings.highScore);
         gameOverScreen.Text("You Lost" + "\n" + "Score:" + finalScore + "\nPress Space to try again", width / 2f, height / 2);
     }
 

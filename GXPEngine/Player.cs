@@ -188,6 +188,7 @@ namespace GXPEngine
             if (canJump)
             {
                 jumping = true;
+                Console.WriteLine();
                 AddChild(new Coroutine(jumpCooldown()));
                 AddChild(new Coroutine(jumpTimer()));
             }
