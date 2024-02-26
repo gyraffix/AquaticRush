@@ -39,12 +39,13 @@ namespace GXPEngine
 
         public Player(string filename, int cols, int rows, MyGame game, int frames = -1, bool addCollider = true) : base(filename, cols, rows, frames, addCollider)
         {
-            scaleOG = scale;
+            
             game1 = game;
 
             SetXY(game.width/2 , game.height - 100);
             SetOrigin(width / 2, height / 2);
             SetScaleXY(0.06f, 0.06f);
+            scaleOG = scale;
             playerUI = new EasyDraw(game.width, game.height, false);
         }
         
@@ -68,7 +69,7 @@ namespace GXPEngine
                 foreach (int index in toDestroy)
                 {
 
-                    bullets[index].LateDestroy();
+                    bullets[index].LateRemove();
                     bullets.RemoveAt(index);
 
 
@@ -101,12 +102,12 @@ namespace GXPEngine
             }
             if(Input.GetKeyDown(Key.W) && !jumping)
             {
-                //Jump();
+                Jump();
             }
 
             if (moving)
             {
-                Translate(playerSpeed, 0);
+                Translate(playerSpeed * Time.deltaTime/5, 0);
                 if (playerSpeed < 0 && x < 0)
                 {
                     x = 0;
@@ -225,17 +226,17 @@ namespace GXPEngine
         IEnumerator jumpTimer()
         {
 
-            SetScaleXY(scaleX +0.01f, scaleY+0.01f);
+            SetScaleXY(scaleX +0.01f * scaleOG, scaleY+0.01f * scaleOG);
             bool down = false;
             while (scaleX != scaleOG)
             {
                 yield return new WaitForSeconds(0.01f);
-                if (scaleX < 1.6f && !down) SetScaleXY(scaleX + 0.01f, scaleY + 0.01f);
+                if (scaleX < 1.6f * scaleOG && !down) SetScaleXY(scaleX + 0.01f * scaleOG, scaleY + 0.01f * scaleOG);
 
                 else
                 {
                     down = true;
-                    SetScaleXY(scaleX - 0.01f, scaleY - 0.01f);
+                    SetScaleXY(scaleX - 0.01f * scaleOG, scaleY - 0.01f * scaleOG);
                 }
             }
             jumping = false;
@@ -251,7 +252,7 @@ namespace GXPEngine
         IEnumerator hitFeedback()
         {
             hit = true;
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
             {
                 alpha = 0;
                 yield return new WaitForSeconds(0.3f);
@@ -263,9 +264,9 @@ namespace GXPEngine
 
         void OnCollision(GameObject other)
         {
-            if (other.GetType().Equals(typeof(Enemy)) && !jumping && !hit)
+            if (other.GetType().Equals(typeof(Enemy)) && other.noCol == false && !jumping && !hit)
             {
-                other.LateRemove();
+                other.flagged = true;
                 lives -= 1;
                 LateAddChild(new Coroutine(hitFeedback()));
             }

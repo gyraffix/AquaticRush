@@ -104,15 +104,22 @@ public class MyGame : Game {
 			{
 				enemy.Update();
 
-				if (enemy.y > height || (enemy.flagged && enemy.breakable))
+				if (enemy.flagged && enemy.breakable)
 				{
-					if (enemy.flagged && enemy.breakable)
+					if (!enemy.dead)
 					{
+						enemy.dead = true;
+
+						enemy.Death();
+
 						changeScore(50);
 					}
-					toDestroy.Add(enemies.IndexOf(enemy));
-
 				}
+				if (enemy.y > height)
+				{
+					toDestroy.Add(enemies.IndexOf(enemy));
+				}
+				
 			}
 			foreach (int index in toDestroy)
 			{
@@ -248,7 +255,7 @@ public class MyGame : Game {
 			{
 				case 0:
 					{
-						Enemy newEnemy = new Enemy(enemyList[randomNumber], 5, 5, 18);
+						Enemy newEnemy = new Enemy(enemyList[randomNumber], 5, 5, 24);
                         enemies.Add(newEnemy);
                         enemyPlace.AddChild(newEnemy);
                         break;
