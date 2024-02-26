@@ -311,13 +311,13 @@ public class MyGame : Game {
     }
 
 
-
 	IEnumerator difficultyLoop() 
 	{
 		while (difficulty < 3)
         {
 			yield return new WaitForSeconds(0.5f);
             difficulty += 0.01f;
+			changeScore(3);
         }
     }
 
