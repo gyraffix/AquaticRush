@@ -266,6 +266,8 @@ namespace GXPEngine
         {
             if (other.GetType().Equals(typeof(Enemy)) && other.noCol == false && !jumping && !hit)
             {
+                game1.multiplier = 0;
+                game1.changeScore(-50);
                 other.flagged = true;
                 lives -= 1;
                 LateAddChild(new Coroutine(hitFeedback()));
