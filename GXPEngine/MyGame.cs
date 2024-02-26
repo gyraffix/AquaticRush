@@ -32,6 +32,7 @@ public class MyGame : Game {
 
 	public float difficulty = 1;
 	public int score { get; set; } = 0;
+	public int multiplier = 1;
 	private int finalScore;
 
 	public EasyDraw UI;
@@ -113,10 +114,18 @@ public class MyGame : Game {
 						enemy.Death();
 
 						changeScore(50);
+						if (multiplier != 3)
+						{
+							multiplier++;
+						}
 					}
 				}
 				if (enemy.y > height)
 				{
+					if (enemy.breakable)
+					{
+						multiplier = 1;
+					}
 					toDestroy.Add(enemies.IndexOf(enemy));
 				}
 				
@@ -207,6 +216,7 @@ public class MyGame : Game {
 		finalScore = score;
         Console.WriteLine(finalScore);
         score = 0;
+		multiplier = 1;
 		difficulty = 1;
 		AddChild(gameOverScreen);
         gameOverScreen.Text("You Lost" + "\n" + "Score:" + finalScore + "\nPress Space to try again", width / 2f, height / 2);
@@ -214,7 +224,7 @@ public class MyGame : Game {
 
 	public void changeScore(int change)
 	{
-		score += change;
+		score += change * multiplier;
 	}
 
 	static void Main()                          // Main() is the first method that's called when the program is run
