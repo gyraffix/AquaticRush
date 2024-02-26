@@ -14,6 +14,7 @@ namespace GXPEngine
         private Random rnd = new Random();
         public int enemyType;
         private float enemySpeed = 0.5f;
+        private float sideSpeed= 0.5f;
         public bool breakable = true;
         private bool left;
         private float startX;
@@ -30,6 +31,10 @@ namespace GXPEngine
             }
             if (filename.Equals("wood.png") || filename.Equals("rock.png") || filename.Equals("rock1.png")) 
             { 
+                if (filename.Equals("wood.png"))
+                {
+                    enemySpeed = 0.55f;
+                }
                 enemyType = 1;
                 SetCycle(0, 4, 18);
                 breakable = false;
@@ -49,8 +54,6 @@ namespace GXPEngine
         public void Update()
         {
             Animate();
-            if (!dead)
-            {
                 y += enemySpeed;
                 if (enemyType == 2)
                 {
@@ -64,17 +67,19 @@ namespace GXPEngine
                         left = false;
                         x = startX - width;
                     }
-                    if (left) { x -= enemySpeed; }
-                    else { x += enemySpeed; }
+                    if (left) { x -= sideSpeed; }
+                    else { x += sideSpeed; }
                 }
-            }
-            else
+            
+            if(dead)
             {
-                switch(enemyType)
+
+                switch (enemyType)
                 {
                     case 0:
                         if (currentFrame == 16)
                         {
+                            enemySpeed = 0.60f;
                             SetCycle(18, 6, 18);
                         }
                         if (currentFrame == 23)
@@ -85,6 +90,7 @@ namespace GXPEngine
                     case 2:
                         if (currentFrame == 7)
                         {
+                            sideSpeed = 0.25f;
                             SetCycle(8, 7, 18);
                         }
                         if (currentFrame == 14)
