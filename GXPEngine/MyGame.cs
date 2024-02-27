@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Threading;
 using System.Security.Cryptography;
+using System.ComponentModel;
 
 
 public class MyGame : Game {
@@ -16,8 +17,21 @@ public class MyGame : Game {
     private Sprite background;
 	private Sprite background1;
 	private float backgroundSpeed = 1f;
+	private float baseSpeed = 1f;
 
-	private AnimationSprite beach;
+	private Sound gameStart = new Sound("Start.wav");
+
+	private Sound multUp = new Sound("Multiplier Up.wav");
+    private Sound multLost = new Sound("Multiplier Lost.wav");
+
+	private SoundChannel deathSC;
+
+	private Sound seagull = new Sound("Seagull.wav");
+
+	private SoundChannel engineSC; 
+	private SoundChannel waterSC;
+
+    private AnimationSprite beach;
 	private Player player;
 
 	private Sprite enemyPlace;
@@ -51,9 +65,9 @@ public class MyGame : Game {
 
 		//TODO: Make text stand out more.
 
-		//TODO: implement powerups (Maybe? discuss powerups)
-
-		//TODO: Collectibles? (Something like coins maybe)
+		//TODO: add multiplier to screen.
+		
+		//TODO: add Highscore function.
 
 		Settings.Load();
 
@@ -65,6 +79,8 @@ public class MyGame : Game {
         AddChild(background);
 
         UI = new EasyDraw(width, height, false);
+
+		
 
         startScreen = new EasyDraw(width, height);
 		AddChild(startScreen);
@@ -90,19 +106,21 @@ public class MyGame : Game {
 
         player = new Player("jetski.png", 1, 1, this);
         AddChild(player);
+		waterSC = new Sound("Water.wav", true, true).Play();
 		
     }
 
-    // For every game object, Update is called every frame, by the engine:
-    void Update() 
+	// For every game object, Update is called every frame, by the engine:
+	void Update()
 	{
-		beach.Animate();
-        MoveBackground();
 
-        if (!gameOver)
+        beach.Animate();
+		MoveBackground();
+
+		if (!gameOver)
 		{
-            
-            player.Update();
+
+			player.Update();
 			foreach (Enemy enemy in enemies)
 			{
 				enemy.Update();
@@ -119,18 +137,22 @@ public class MyGame : Game {
 						if (multiplier != 3)
 						{
 							multiplier++;
+							multUp.Play();
 						}
 					}
 				}
 				if (enemy.y > height)
 				{
-					if (enemy.breakable)
+					if (enemy.breakable && enemy.flagged == false && multiplier != 1)
 					{
+
+						Console.WriteLine(enemy.flagged);
 						multiplier = 1;
+						multLost.Play();
 					}
 					toDestroy.Add(enemies.IndexOf(enemy));
 				}
-				
+
 			}
 			foreach (int index in toDestroy)
 			{
@@ -143,10 +165,19 @@ public class MyGame : Game {
 			UI.Text("Score: " + score, 25, 60);
 			UI.Text("Lives: " + Math.Floor(player.lives), width - 225, 60);
 
-			if (player.lives < 1) gameOver = true;
+			if (player.lives < 1)
+			{
+				gameOver = true;
+				deathSC = new Sound("Death.wav").Play();
+                engineSC.Stop();
+                waterSC.IsPaused = true;
+            }
 		}
 		else if (!playerDestroyed)
-		GameOver(); //Death is inevitable 8(
+		{
+			if (!deathSC.IsPlaying)
+			GameOver(); //Death is inevitable 8(
+		}
 		else
 		{
 			if (Input.GetKeyDown(Key.SPACE))
@@ -154,8 +185,8 @@ public class MyGame : Game {
 				StartGame();
 			}
 		}
-    }
-
+		
+	}
 	private void StartGame()
 	{
         background1.SetXY(background1.x, ((int)background1.y));
@@ -181,6 +212,7 @@ public class MyGame : Game {
             beach.SetXY(0, 0);
             player = new Player("jetski.png", 1, 1, this);
 			AddChild(player);
+			waterSC.IsPaused = false;
         }
 
         
@@ -190,6 +222,8 @@ public class MyGame : Game {
 
         AddChild(new Coroutine(enemyLoop()));
 		AddChild(new Coroutine(difficultyLoop()));
+		AddChild(new Coroutine(scoreTime()));
+		AddChild(new Coroutine(gullLoop()));
 
         AddChild(UI);
         UI.TextFont(Utils.LoadFont("minecraft.ttf", 36));
@@ -198,11 +232,13 @@ public class MyGame : Game {
 		gameOver = false;
         playerDestroyed = false;
 		player.start = true;
-		
+		gameStart.Play();
+		engineSC = new Sound("Jetski Engine.wav", true, true).Play();
     }
 
 	private void GameOver()
 	{
+		while (deathSC.IsPlaying) ;
 		gameOverScreen.ClearTransparent();
 		restart = true;
 		player.LateDestroy();
@@ -241,6 +277,7 @@ public class MyGame : Game {
 	}
 	private void MoveBackground()
 	{
+		backgroundSpeed = Math.Max(baseSpeed * (difficulty/2), baseSpeed);
 		if (!gameOver)
 		{
 			beach.Translate(0, backgroundSpeed);
@@ -253,7 +290,7 @@ public class MyGame : Game {
             background.Translate(0, backgroundSpeed / 5);
         }
 
-		if (background.y == 0)
+		if (background.y < 3 && background.y > - 3)
 		{
 			background.SetXY(0, -height);
             background1.SetXY(0, -height);
@@ -318,15 +355,38 @@ public class MyGame : Game {
 		}
     }
 
+	IEnumerator scoreTime()
+	{
+		while (!gameOver)
+		{
+			yield return new WaitForSeconds(0.5f);
+			changeScore(3);
+		}
+	}
+
+	IEnumerator gullLoop()
+	{
+		int random;
+		while (!gameOver)
+		{
+			random = rnd.Next(30);
+			if (random > 9)
+			{
+				yield return new WaitForSeconds(random);
+				seagull.Play();
+			}
+		}
+	}
 
 	IEnumerator difficultyLoop() 
 	{
-		while (difficulty < 3)
-        {
-			yield return new WaitForSeconds(0.5f);
-            difficulty += 0.01f;
-			changeScore(3);
-        }
+			while (difficulty < 3)
+			{
+				yield return new WaitForSeconds(0.5f);
+
+                difficulty += 0.01f;
+
+			}    
     }
 
 

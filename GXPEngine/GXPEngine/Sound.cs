@@ -14,7 +14,6 @@ namespace GXPEngine
 	public class Sound
 	{
         private static Dictionary<string, IntPtr> _soundCache = new Dictionary<string, IntPtr>();
-
         private IntPtr _id;
         private SoundSystem _system;
 
@@ -78,7 +77,6 @@ namespace GXPEngine
 		/// </param>
 		public SoundChannel Play( bool paused = false, uint channelId=0, float volume=1, float pan=0)
 		{
-
 			#if !USE_FMOD_AUDIO
 			if (channelId != 0)
 			{

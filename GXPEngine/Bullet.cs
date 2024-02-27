@@ -14,7 +14,7 @@ namespace GXPEngine
         private bool addCollider;
         private float bulletSpeed = 2;
         private float trajectory;
-        
+        public static Sound bulletHit = new Sound("Gun Hit.wav");
         
         
 
@@ -48,6 +48,7 @@ namespace GXPEngine
         {
             if (!other.GetType().Equals(typeof(Player)))
             {
+                bulletHit.Play();
                 flagged = true;
                 other.flagged = true;
                 

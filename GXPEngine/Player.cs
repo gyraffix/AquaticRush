@@ -15,7 +15,11 @@ namespace GXPEngine
        private List<int> toDestroy = new List<int>();
         public bool start;
 
-
+        private Sound gunShoot = new Sound("Gun Shoot.wav");
+        private Sound gunLoaded = new Sound("Gun Reload Ready.wav");
+        private Sound jumpStart = new Sound("Jump Start.wav");
+        private Sound jumpStop = new Sound("Splash Down.wav");
+        private Sound playerHit = new Sound("Hit.wav");
 
         private float playerSpeed;
         public float lives = 3;
@@ -24,11 +28,11 @@ namespace GXPEngine
         private bool rotating;
         private bool moving;
         private bool jumping;
-        private bool hit;
+        public bool hit;
         
         private bool canJump = true;
         private bool coolDown;
-        private bool canShoot = true;
+        public bool canShoot = true;
 
         private EasyDraw playerUI;
         private bool addUI;
@@ -58,6 +62,7 @@ namespace GXPEngine
                 
                 Move();
                 Shoot();
+                
                 foreach (Bullet bullet in bullets)
                 {
                     bullet.Update();
@@ -188,6 +193,7 @@ namespace GXPEngine
             if (canJump)
             {
                 jumping = true;
+                jumpStart.Play();
                 Console.WriteLine();
                 AddChild(new Coroutine(jumpCooldown()));
                 AddChild(new Coroutine(jumpTimer()));
@@ -200,6 +206,8 @@ namespace GXPEngine
             {
                 if (!addUI) parent.AddChild(playerUI);
                 Bullet newBullet = new Bullet("circle.png", x, y, rotation/45);
+                gunShoot.Play();
+
                 parent.AddChild(newBullet);
                 bullets.Add(newBullet);
                 Console.WriteLine("there are currently " + bullets.Count + " bullets");
@@ -220,6 +228,7 @@ namespace GXPEngine
                 playerUI.Fill(255, 0, 0);
                 playerUI.Rect(game.width/2, game.height - 40, i*2, 10);
             }
+            gunLoaded.Play();
             playerUI.ClearTransparent();
             canShoot = true;
         }
@@ -240,6 +249,7 @@ namespace GXPEngine
                     SetScaleXY(scaleX - 0.01f * scaleOG, scaleY - 0.01f * scaleOG);
                 }
             }
+            jumpStop.Play();
             jumping = false;
         }
 
@@ -269,8 +279,9 @@ namespace GXPEngine
             {
                 game1.multiplier = 0;
                 game1.changeScore(-50);
-                other.flagged = true;
+                other.LateRemove();
                 lives -= 1;
+                playerHit.Play();
                 LateAddChild(new Coroutine(hitFeedback()));
             }
         }
