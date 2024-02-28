@@ -41,6 +41,7 @@ public class MyGame : Game {
 	private Sprite enemyPlace;
 	private List<Enemy> enemies = new List<Enemy>();
     private List<Wave> waves = new List<Wave>();
+    private List<Pickup> pickups = new List<Pickup>();
     private bool spawnEnemy = false;
 	private float enemyCooldown = 1.5f;
 
@@ -52,6 +53,7 @@ public class MyGame : Game {
 	public float difficulty = 1;
 	public int score { get; set; } = 0;
 	public int multiplier = 1;
+	public bool multiplierPU;
 	private int finalScore;
 
 	public EasyDraw UI;
@@ -131,6 +133,7 @@ public class MyGame : Game {
 			player.Update();
 			EnemyUpdate();
 			WaveUpdate();
+			PickupUpdate();
 			UI.ClearTransparent();
 			UpdateUI();
             
@@ -192,6 +195,7 @@ public class MyGame : Game {
 
         AddChild(new Coroutine(enemyLoop()));
 		AddChild(new Coroutine(WaveLoop()));
+		AddChild(new Coroutine(PickupLoop()));
 		AddChild(new Coroutine(difficultyLoop()));
 		AddChild(new Coroutine(scoreTime()));
 		AddChild(new Coroutine(gullLoop()));
@@ -261,7 +265,7 @@ public class MyGame : Game {
             background.Translate(0, backgroundSpeed * (Time.deltaTime / 5) / 5);
         }
 
-		if (background.y < 3 && background.y > - 3)
+		if (background.y < 4 && background.y > - 4)
 		{
 			background.SetXY(0, -height);
             background1.SetXY(0, -height);
@@ -287,7 +291,7 @@ public class MyGame : Game {
                     enemy.Death();
 
                     changeScore(50);
-                    if (multiplier != 3)
+                    if (multiplier < 3)
                     {
                         multiplier++;
                         multUp.Play();
@@ -296,7 +300,7 @@ public class MyGame : Game {
             }
             if (enemy.y > height)
             {
-                if (enemy.breakable && enemy.flagged == false && multiplier != 1)
+                if (enemy.breakable && enemy.flagged == false && multiplier != 1 && !multiplierPU)
                 {
 
                     Console.WriteLine(enemy.flagged);
@@ -315,6 +319,14 @@ public class MyGame : Game {
         }
         toDestroy.Clear();
     }
+
+	private void PickupUpdate()
+	{
+		foreach (Pickup pickup in pickups)
+		{
+			pickup.Update();
+		}
+	}
 
 	private void WaveUpdate()
 	{
@@ -369,8 +381,20 @@ public class MyGame : Game {
 		}
 	}
 
+    IEnumerator PickupLoop()
+    {
+		while (!gameOver)
+		{
 
-	IEnumerator enemyLoop()
+			yield return new WaitForSeconds(25);
+			Pickup pickup = new Pickup("triangle.png", rnd.Next(width - 150), player, this, rnd.Next(3));
+			enemyPlace.AddChild(pickup);
+			pickups.Add(pickup);
+
+		}
+    }
+
+    IEnumerator enemyLoop()
 	{
 		while (!gameOver)
 		{

@@ -33,6 +33,7 @@ namespace GXPEngine
         private bool canJump = true;
         private bool coolDown;
         public bool canShoot = true;
+        public int shootSpeed = 50;
 
         private EasyDraw playerUI;
         private bool addUI;
@@ -59,7 +60,6 @@ namespace GXPEngine
 
             if (start)
             {
-                
                 Move();
                 Shoot();
                 
@@ -217,13 +217,13 @@ namespace GXPEngine
         IEnumerator shootCoolDown()
         {
             
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < shootSpeed; i++)
             {
                 
                 yield return new WaitForSeconds(0.01f);
 
                 playerUI.Fill(255, 0, 0);
-                playerUI.Rect(game.width/2, game.height - 40, i*2, 10);
+                playerUI.Rect(game.width/2, game.height - 40, (i*100)/shootSpeed, 10);
             }
             gunLoaded.Play();
             playerUI.ClearTransparent();
