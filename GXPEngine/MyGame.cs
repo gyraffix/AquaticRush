@@ -67,8 +67,6 @@ public class MyGame : Game {
 
 		//TODO:
 
-        //Waves 200 pts
-
 		//UI menu screen still needs to be finalized(Art will come)
 
 		//Scoreboard still needs to be implemented
@@ -346,8 +344,8 @@ public class MyGame : Game {
 	{
 		while (!gameOver)
 		{
-			int random = rnd.Next(6);
-			if(random > 1)
+			int random = rnd.Next(10);
+			if(random > 4)
 			{
 				yield return new WaitForSeconds(random);
 				Wave newWave = new Wave("colors.png", 1, 1, rnd.Next(width - 150));
