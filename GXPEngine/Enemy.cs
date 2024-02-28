@@ -79,6 +79,7 @@ namespace GXPEngine
                     case 0:
                         if (currentFrame == 16)
                         {
+
                             enemySpeed = 0.60f;
                             SetCycle(18, 6, 18);
                         }
@@ -116,9 +117,18 @@ namespace GXPEngine
 
         public void Death()
         {
+            AddChild(new Coroutine(Blink()));
             enemySpeed = 0.5f;
             noCol = true;
             dead = true;
+        }
+
+        IEnumerator Blink()
+        {
+            uint colorOG = this.color;
+            this.color = 0x000000;
+            yield return new WaitForSeconds(0.1f);
+            this.color = colorOG;
         }
     }
 }

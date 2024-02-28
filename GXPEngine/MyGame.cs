@@ -8,6 +8,10 @@ using System.Collections;
 using System.Threading;
 using System.Security.Cryptography;
 using System.ComponentModel;
+using System.Drawing.Drawing2D;
+using System.IO;
+using System.Net.NetworkInformation;
+using System.Reflection;
 
 
 public class MyGame : Game {
@@ -36,7 +40,8 @@ public class MyGame : Game {
 
 	private Sprite enemyPlace;
 	private List<Enemy> enemies = new List<Enemy>();
-	private bool spawnEnemy = false;
+    private List<Wave> waves = new List<Wave>();
+    private bool spawnEnemy = false;
 	private float enemyCooldown = 1.5f;
 
     private List<int> toDestroy = new List<int>();
@@ -56,20 +61,20 @@ public class MyGame : Game {
     private bool restart;
     public bool gameOver = true;
 	private bool playerDestroyed = true;
-
     public MyGame() : base(1366, 768, false)
-	{
+    {
 		targetFps = 60;
 
-		//TODO: Better Start menu.
+		//TODO:
 
-		//TODO: Make text stand out more.
+        //Waves 200 pts
 
-		//TODO: add multiplier to screen.
-		
-		//TODO: add Highscore function.
+		//UI menu screen still needs to be finalized(Art will come)
 
-		Settings.Load();
+		//Scoreboard still needs to be implemented
+
+
+        Settings.Load();
 
         background1 = new Sprite("background1.png", false, false);
         background1.SetXY(0, -height);
@@ -84,11 +89,11 @@ public class MyGame : Game {
 
         startScreen = new EasyDraw(width, height);
 		AddChild(startScreen);
-		startScreen.TextFont("minecraft.ttf", 40);
+		startScreen.TextFont("CheerfulPeach.otf", 40);
 		startScreen.Text("Press Space to Start", width/3.3f, height/2);
 
         gameOverScreen = new EasyDraw(width, height);
-        gameOverScreen.TextFont("minecraft.ttf", 40);
+        gameOverScreen.TextFont("CheerfulPeach.otf", 40);
 		gameOverScreen.TextAlign(CenterMode.Center, CenterMode.Center);
 
 		enemyList[0] = "shark.png";
@@ -121,49 +126,11 @@ public class MyGame : Game {
 		{
 
 			player.Update();
-			foreach (Enemy enemy in enemies)
-			{
-				enemy.Update();
-
-				if (enemy.flagged && enemy.breakable)
-				{
-					if (!enemy.dead)
-					{
-						enemy.dead = true;
-
-						enemy.Death();
-
-						changeScore(50);
-						if (multiplier != 3	)
-						{
-							multiplier++;
-							multUp.Play();
-						}
-					}
-				}
-				if (enemy.y > height)
-				{
-					if (enemy.breakable && enemy.flagged == false && multiplier != 1)
-					{
-
-						Console.WriteLine(enemy.flagged);
-						multiplier = 1;
-						multLost.Play();
-					}
-					toDestroy.Add(enemies.IndexOf(enemy));
-				}
-
-			}
-			foreach (int index in toDestroy)
-			{
-				enemies[index].LateDestroy();
-				enemies.RemoveAt(index);
-
-			}
-			toDestroy.Clear();
+			EnemyUpdate();
+			WaveUpdate();
 			UI.ClearTransparent();
-			UI.Text("Score: " + score, 25, 60);
-			UI.Text("Lives: " + Math.Floor(player.lives), width - 225, 60);
+			UpdateUI();
+            
 
 			if (player.lives < 1)
 			{
@@ -221,12 +188,13 @@ public class MyGame : Game {
         
 
         AddChild(new Coroutine(enemyLoop()));
+		AddChild(new Coroutine(WaveLoop()));
 		AddChild(new Coroutine(difficultyLoop()));
 		AddChild(new Coroutine(scoreTime()));
 		AddChild(new Coroutine(gullLoop()));
 
         AddChild(UI);
-        UI.TextFont(Utils.LoadFont("minecraft.ttf", 36));
+        UI.TextFont(Utils.LoadFont("CheerfulPeach.otf", 36));
         UI.Fill(0);
 		
 		gameOver = false;
@@ -300,6 +268,95 @@ public class MyGame : Game {
 		background.alpha = Math.Max(1 - (difficulty - 1) / 2, 0);
         background1.alpha = Math.Min(0 + (difficulty - 1) / 2, 1);
     }
+
+	private void EnemyUpdate()
+	{
+        foreach (Enemy enemy in enemies)
+        {
+            enemy.Update();
+
+            if (enemy.flagged && enemy.breakable)
+            {
+                if (!enemy.dead)
+                {
+                    enemy.dead = true;
+
+                    enemy.Death();
+
+                    changeScore(50);
+                    if (multiplier != 3)
+                    {
+                        multiplier++;
+                        multUp.Play();
+                    }
+                }
+            }
+            if (enemy.y > height)
+            {
+                if (enemy.breakable && enemy.flagged == false && multiplier != 1)
+                {
+
+                    Console.WriteLine(enemy.flagged);
+                    multiplier = 1;
+                    multLost.Play();
+                }
+                toDestroy.Add(enemies.IndexOf(enemy));
+            }
+
+        }
+        foreach (int index in toDestroy)
+        {
+            enemies[index].LateDestroy();
+            enemies.RemoveAt(index);
+
+        }
+        toDestroy.Clear();
+    }
+
+	private void WaveUpdate()
+	{
+		foreach(Wave wave in waves)
+		{
+			wave.Update();
+		}
+	}
+
+	private void UpdateUI()
+	{
+		
+		UI.Fill(Color.Black);
+        UI.TextFont(Utils.LoadFont("CheerfulPeach.otf", 36));
+        UI.Text("Score: " + score, 28, 60);
+        UI.TextFont(Utils.LoadFont("CheerfulPeach.otf", 24));
+        UI.Text("Multiplier: " + multiplier + "x", 28, 100);
+        UI.TextFont(Utils.LoadFont("CheerfulPeach.otf", 36));
+		UI.Text("Lives: " + Math.Floor(player.lives), width - 222, 60);
+
+        
+        UI.Fill(Color.White);
+
+        UI.Text("Score: " + score, 25, 60);
+        UI.TextFont(Utils.LoadFont("CheerfulPeach.otf", 24));
+        UI.Text("Multiplier: " + multiplier + "x", 25, 100);
+        UI.TextFont(Utils.LoadFont("CheerfulPeach.otf", 36));
+        UI.Text("Lives: " + Math.Floor(player.lives), width - 225, 60);
+    }
+
+	IEnumerator WaveLoop()
+	{
+		while (!gameOver)
+		{
+			int random = rnd.Next(6);
+			if(random > 1)
+			{
+				yield return new WaitForSeconds(random);
+				Wave newWave = new Wave("colors.png", 1, 1, rnd.Next(width - 150));
+				enemyPlace.AddChild(newWave);
+				waves.Add(newWave);
+			}
+		}
+	}
+
 
 	IEnumerator enemyLoop()
 	{

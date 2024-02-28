@@ -105,10 +105,7 @@ namespace GXPEngine
                 Walk(1); 
                 Rotate(1);
             }
-            if(Input.GetKeyDown(Key.W) && !jumping)
-            {
-                Jump();
-            }
+            
 
             if (moving)
             {
@@ -192,11 +189,11 @@ namespace GXPEngine
         {
             if (canJump)
             {
+                game1.changeScore(200);
                 jumping = true;
                 jumpStart.Play();
                 Console.WriteLine();
-                AddChild(new Coroutine(jumpCooldown()));
-                AddChild(new Coroutine(jumpTimer()));
+                LateAddChild(new Coroutine(jumpTimer()));
             }
         }
 
@@ -253,12 +250,6 @@ namespace GXPEngine
             jumping = false;
         }
 
-        IEnumerator jumpCooldown()
-        {
-            canJump = false;
-            yield return new WaitForSeconds(3);
-            canJump = true;
-        }
 
         IEnumerator hitFeedback()
         {
@@ -283,6 +274,11 @@ namespace GXPEngine
                 lives -= 1;
                 playerHit.Play();
                 LateAddChild(new Coroutine(hitFeedback()));
+            }
+
+            if (other.GetType().Equals(typeof(Wave)) && jumping == false)
+            {
+                Jump();
             }
         }
     }
