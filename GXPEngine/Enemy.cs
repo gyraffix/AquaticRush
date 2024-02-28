@@ -54,7 +54,7 @@ namespace GXPEngine
         public void Update()
         {
             Animate();
-                y += enemySpeed;
+                y += enemySpeed * Time.deltaTime / 5;
                 if (enemyType == 2)
                 {
                     if (x > startX + width)
@@ -67,8 +67,8 @@ namespace GXPEngine
                         left = false;
                         x = startX - width;
                     }
-                    if (left) { x -= sideSpeed; }
-                    else { x += sideSpeed; }
+                    if (left) { x -= sideSpeed * Time.deltaTime / 5; }
+                    else { x += sideSpeed * Time.deltaTime / 5; }
                 }
             
             if(dead)

@@ -134,7 +134,7 @@ public class MyGame : Game {
 						enemy.Death();
 
 						changeScore(50);
-						if (multiplier != 3)
+						if (multiplier != 3	)
 						{
 							multiplier++;
 							multUp.Play();
@@ -280,14 +280,14 @@ public class MyGame : Game {
 		backgroundSpeed = Math.Max(baseSpeed * (difficulty/2), baseSpeed);
 		if (!gameOver)
 		{
-			beach.Translate(0, backgroundSpeed);
-			background.Translate(0, backgroundSpeed);
-			background1.Translate(0, backgroundSpeed);
+			beach.Translate(0, backgroundSpeed * Time.deltaTime / 5);
+			background.Translate(0, backgroundSpeed * Time.deltaTime / 5);
+			background1.Translate(0, backgroundSpeed * Time.deltaTime / 5);
 		}
 		else
 		{
-			background1.Translate(0, backgroundSpeed / 5);
-            background.Translate(0, backgroundSpeed / 5);
+			background1.Translate(0, backgroundSpeed * (Time.deltaTime / 5) / 5);
+            background.Translate(0, backgroundSpeed * (Time.deltaTime / 5) / 5);
         }
 
 		if (background.y < 3 && background.y > - 3)

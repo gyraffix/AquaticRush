@@ -238,15 +238,15 @@ namespace GXPEngine
 
             SetScaleXY(scaleX +0.01f * scaleOG, scaleY+0.01f * scaleOG);
             bool down = false;
-            while (scaleX != scaleOG)
+            while (scaleX > scaleOG)
             {
                 yield return new WaitForSeconds(0.01f);
-                if (scaleX < 1.6f * scaleOG && !down) SetScaleXY(scaleX + 0.01f * scaleOG, scaleY + 0.01f * scaleOG);
+                if (scaleX < 1.6f * scaleOG && !down) SetScaleXY(scaleX + 0.01f * scaleOG * Time.deltaTime / 5, scaleY + 0.01f * scaleOG * Time.deltaTime / 5);
 
                 else
                 {
                     down = true;
-                    SetScaleXY(scaleX - 0.01f * scaleOG, scaleY - 0.01f * scaleOG);
+                    SetScaleXY(scaleX - 0.01f * scaleOG * Time.deltaTime / 5, scaleY - 0.01f * scaleOG * Time.deltaTime / 5);
                 }
             }
             jumpStop.Play();

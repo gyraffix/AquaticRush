@@ -33,12 +33,12 @@ namespace GXPEngine
         {
             if (trajectory == 0)
             {
-                y -= bulletSpeed;
+                y -= bulletSpeed * Time.deltaTime / 5;
             }
             else
             {
-                y -= bulletSpeed / (1 + Math.Abs(trajectory));
-                x += 2*trajectory;
+                y -= bulletSpeed / (1 + Math.Abs(trajectory)) * Time.deltaTime / 5;
+                x += 2* trajectory * Time.deltaTime / 5;
             }
 
             
