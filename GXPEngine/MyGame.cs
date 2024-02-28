@@ -86,9 +86,14 @@ public class MyGame : Game {
 		
 
         startScreen = new EasyDraw(width, height);
+
 		AddChild(startScreen);
-		startScreen.TextFont("CheerfulPeach.otf", 40);
-		startScreen.Text("Press Space to Start", width/3.3f, height/2);
+		startScreen.Fill(Color.Black);
+        startScreen.TextFont(Utils.LoadFont("CheerfulPeach.otf", 40));
+        startScreen.Text("Press Space to Start", width / 3f + 3, height / 2);
+		startScreen.Fill(Color.White);
+        startScreen.TextFont(Utils.LoadFont("CheerfulPeach.otf", 40));
+        startScreen.Text("Press Space to Start", width / 3f, height / 2);
 
         gameOverScreen = new EasyDraw(width, height);
         gameOverScreen.TextFont("CheerfulPeach.otf", 40);
@@ -316,8 +321,17 @@ public class MyGame : Game {
 		foreach(Wave wave in waves)
 		{
 			wave.Update();
+			if (wave.y > height + 100)
+			{ toDestroy.Add(waves.IndexOf(wave)); }
 		}
-	}
+        foreach (int index in toDestroy)
+        {
+            waves[index].LateDestroy();
+            waves.RemoveAt(index);
+
+        }
+        toDestroy.Clear();
+    }
 
 	private void UpdateUI()
 	{
