@@ -270,7 +270,7 @@ namespace GXPEngine
             {
                 game1.multiplier = 0;
                 game1.changeScore(-50);
-                other.LateRemove();
+                other.flagged = true;
                 lives -= 1;
                 playerHit.Play();
                 LateAddChild(new Coroutine(hitFeedback()));

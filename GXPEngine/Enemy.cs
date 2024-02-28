@@ -111,7 +111,7 @@ namespace GXPEngine
         {
             if (enemyType == 1 && other.GetType().Equals(typeof(Enemy)))
             {
-                other.LateRemove();
+                other.flagged = true;
             }
         }
 
