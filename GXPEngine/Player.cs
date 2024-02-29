@@ -219,7 +219,7 @@ namespace GXPEngine
             if (Input.GetKeyDown(Key.SPACE) && canShoot)
             {
                 if (!addUI) parent.AddChild(playerUI);
-                Bullet newBullet = new Bullet("circle.png", x, y, rotation/45);
+                Bullet newBullet = new Bullet("bullet.png", x, y, rotation/45, 2, 2);
                 gunShoot.Play();
 
                 parent.AddChild(newBullet);
@@ -272,7 +272,6 @@ namespace GXPEngine
 
         public IEnumerator hitFeedback()
         {
-            hit = true;
             uint colorOG = color;
             SetCycle(12, 12, 30);
             for (int i = 0; i < 4; i++)

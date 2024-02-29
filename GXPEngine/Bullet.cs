@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GXPEngine
 {
-    internal class Bullet : Sprite
+    internal class Bullet : AnimationSprite
     {
 
         private string filename;
@@ -18,19 +18,21 @@ namespace GXPEngine
         
         
 
-        public Bullet(string filename,float startX, float startY, float rotation, bool keepInCache = false, bool addCollider = true) : base(filename, keepInCache, addCollider)
+        public Bullet(string filename,float startX, float startY, float rotation, int cols, int rows, int frames = -1, bool addCollider = true) : base(filename, cols, rows, frames)
         {
             this.filename = filename;
             this.addCollider = addCollider;
-            x = startX - (width* 0.2f)/2;
+            x = startX - (width* 0.8f)/2;
             y = startY;
             trajectory = rotation;
             Console.WriteLine("bullet created");
-            scale = 0.2f;
+            scale = 0.8f;
+            SetCycle(0, 4, 18);
         }
 
         public void Update()
         {
+            Animate();
             if (trajectory == 0)
             {
                 y -= bulletSpeed * Time.deltaTime / 5;

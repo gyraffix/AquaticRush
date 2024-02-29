@@ -26,6 +26,7 @@ namespace GXPEngine
         {
             if (other.GetType().Equals(typeof(Enemy)) && other.noCol == false && !player.jumping && !player.hit && player.lives > 0)
             {
+                player.hit = true;
                 game.multiplier = 0;
                 game.changeScore(-50);
                 other.flagged = true;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace GXPEngine
 {
@@ -37,6 +38,7 @@ namespace GXPEngine
         {
             if (other.GetType().Equals(typeof(PlayerHitbox)) && !used)
             {
+                
                 this.alpha = 0;
                 used = true;
                 LateAddChild(new Coroutine(powerUp()));
@@ -48,14 +50,17 @@ namespace GXPEngine
             switch(type)
             {
                 case 0:
-                    player.shootSpeed = 30;
+                    game.text("Shot Speed UP!!!", x + width/2, y + 50, Color.Purple, 1, 30);
+                    player.shootSpeed = 10;
                     yield return new WaitForSeconds(10);
                     player.shootSpeed = 50;
                     break; 
                 case 1:
+                    game.text("1UP!!!", x + width / 2, y + 50, Color.Purple, 1, 30);
                     player.lives++;
                     break;
                 case 2:
+                    game.text("MAX MULTIPLIER!!!", x + width / 2, y + 50, Color.Purple, 1, 24);
                     game.multiplier = 5;
                     game.multiplierPU = true;
                     yield return new WaitForSeconds(10);

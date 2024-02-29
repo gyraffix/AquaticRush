@@ -57,8 +57,12 @@ public class MyGame : Game {
 	private int finalScore;
 
 	public EasyDraw UI;
+	public EasyDraw timedUI;
+
+	private bool expression;
 
 	public String[] enemyList = new string[5];
+	public String[] expressions = new string[5];
 
     private bool restart;
     public bool gameOver = true;
@@ -83,7 +87,7 @@ public class MyGame : Game {
 		AddChild(background1);
         AddChild(background);
 
-        UI = new EasyDraw(width, height, false);
+        timedUI = new EasyDraw(width, height, false);
 
 		
 
@@ -106,6 +110,13 @@ public class MyGame : Game {
 		enemyList[2] = "tentacle.png";
 		enemyList[3] = "rock.png";
 		enemyList[4] = "rock1.png";
+
+		expressions[0] = "AWESOME!!";
+        expressions[1] = "GREAT!!";
+        expressions[2] = "SUPER!!";
+        expressions[3] = "EPIC!!";
+        expressions[4] = "JETTASTIC!!";
+
         beach = new AnimationSprite("beach.png", 4, 2, -1, false, false);
 		beach.SetCycle(0,8,12);
 		AddChild(beach);
@@ -117,7 +128,7 @@ public class MyGame : Game {
         player = new Player("jetski.png", 7, 7, this, 48);
         AddChild(player);
 		waterSC = new Sound("Water.wav", true, true).Play();
-		
+		AddChild(timedUI);
     }
 
 	// For every game object, Update is called every frame, by the engine:
@@ -171,7 +182,7 @@ public class MyGame : Game {
 			RemoveChild(gameOverScreen);
 
             UI = new EasyDraw(width, 200, false);
-
+			timedUI = new EasyDraw(width, height, false); 
             background.SetXY(0, -height);
             background1.SetXY(0, -height);
 
@@ -191,7 +202,7 @@ public class MyGame : Game {
 
         
 
-        UI = new EasyDraw(width, 200, false);
+        UI = new EasyDraw(width, height, false);
         
 
         AddChild(new Coroutine(enemyLoop()));
@@ -204,7 +215,9 @@ public class MyGame : Game {
         AddChild(UI);
         UI.TextFont(Utils.LoadFont("CheerfulPeach.otf", 36));
         UI.Fill(0);
-		
+
+		AddChild(timedUI);
+
 		gameOver = false;
         playerDestroyed = false;
 		player.start = true;
@@ -246,7 +259,8 @@ public class MyGame : Game {
 	public void changeScore(int change)
 	{
 		score += change * multiplier;
-	}
+        
+    }
 
 	static void Main()                          // Main() is the first method that's called when the program is run
 	{
@@ -295,6 +309,11 @@ public class MyGame : Game {
                     changeScore(50);
                     if (multiplier < 3)
                     {
+						if (!expression && !player.hit)
+						{
+							expression = true;
+							text(expressions[rnd.Next(5)], 28, 150, Color.Yellow, 1, 36);
+						}
                         multiplier++;
                         multUp.Play();
                     }
@@ -304,8 +323,7 @@ public class MyGame : Game {
             {
                 if (enemy.breakable && enemy.flagged == false && multiplier != 1 && !multiplierPU)
                 {
-
-                    Console.WriteLine(enemy.flagged);
+					text("Multiplier Lost!", enemy.x - 100, game.height - 50, Color.Red, 1.5f, 30);
                     multiplier = 1;
                     multLost.Play();
                 }
@@ -321,6 +339,11 @@ public class MyGame : Game {
         }
         toDestroy.Clear();
     }
+	
+	public void text(string text, float x, float y, Color color, float seconds, int fontSize)
+	{
+		AddChild(new Coroutine(ScreenText(text, x, y, color, seconds, fontSize)));
+	}
 
 	private void PickupUpdate()
 	{
@@ -368,6 +391,22 @@ public class MyGame : Game {
         UI.Text("Lives: " + Math.Floor(player.lives), width - 225, 60);
     }
 
+	IEnumerator ScreenText(string text, float x, float y, Color color, float seconds, int fontSize)
+	{
+		
+		timedUI.Fill(Color.Black);
+		timedUI.TextFont(Utils.LoadFont("CheerfulPeach.otf", fontSize));
+		timedUI.Text(text, x + 3, y + 3);
+
+		timedUI.Fill(color);
+		timedUI.TextFont(Utils.LoadFont("CheerfulPeach.otf", fontSize));
+		timedUI.Text(text, x, y);
+		yield return new WaitForSeconds(seconds);
+		timedUI.ClearTransparent();
+		if (y == 150)
+			expression = false;
+    }
+
 	IEnumerator WaveLoop()
 	{
 		while (!gameOver)
@@ -376,7 +415,8 @@ public class MyGame : Game {
 			if(random > 4)
 			{
 				yield return new WaitForSeconds(random);
-				Wave newWave = new Wave("colors.png", 1, 1, rnd.Next(width - 150));
+				Wave newWave = new Wave("wave.png", 3, 2, rnd.Next(width - 150), 5);
+				newWave.SetCycle(0, 5, 30);
 				enemyPlace.AddChild(newWave);
 				waves.Add(newWave);
 			}

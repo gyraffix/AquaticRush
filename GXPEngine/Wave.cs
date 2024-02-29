@@ -8,18 +8,20 @@ namespace GXPEngine
 {
     internal class Wave : AnimationSprite
     {
-        private float moveSpeed = 0.5f;
+        private float moveSpeed = 0.75f;
 
-        public Wave(string filename, int cols, int rows, int posX) : base(filename, cols, rows)
+        public Wave(string filename, int cols, int rows, int posX, int frames) : base(filename, cols, rows, frames)
         {
             scaleX = 1.5f;
+            scaleY = 0.8f;
             x = posX;
-            y = -80;
+            y = -480;
         }
 
 
         public void Update()
         {
+            Animate();
             y += moveSpeed * Time.deltaTime / 5;
         }
 
