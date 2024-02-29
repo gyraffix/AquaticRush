@@ -35,7 +35,7 @@ namespace GXPEngine
 
         public void OnCollision(GameObject other)
         {
-            if (other.GetType().Equals(typeof(Player)) && !used)
+            if (other.GetType().Equals(typeof(PlayerHitbox)) && !used)
             {
                 this.alpha = 0;
                 used = true;

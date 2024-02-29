@@ -46,7 +46,7 @@ namespace GXPEngine
 
         void OnCollision(GameObject other)
         {
-            if (!other.GetType().Equals(typeof(Player)) && !other.GetType().Equals(typeof(Wave)))
+            if (!other.GetType().Equals(typeof(PlayerHitbox)) && !other.GetType().Equals(typeof(Player)) && !other.GetType().Equals(typeof(Wave)))
             {
                 bulletHit.Play();
                 flagged = true;

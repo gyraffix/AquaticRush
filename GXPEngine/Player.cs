@@ -20,7 +20,7 @@ namespace GXPEngine
         private Sound gunLoaded = new Sound("Gun Reload Ready.wav");
         private Sound jumpStart = new Sound("Jump Start.wav");
         private Sound jumpStop = new Sound("Splash Down.wav");
-        private Sound playerHit = new Sound("Hit.wav");
+        public Sound playerHit = new Sound("Hit.wav");
 
         private float playerSpeed;
         public float lives = 3;
@@ -28,7 +28,7 @@ namespace GXPEngine
         private float rotateSpeed;
         private bool rotating;
         private bool moving;
-        private bool jumping;
+        public bool jumping;
         public bool hit;
         
         private bool canJump = true;
@@ -42,17 +42,21 @@ namespace GXPEngine
         private MyGame game1;
         private List<Bullet> bullets = new List<Bullet>();
 
+        private PlayerHitbox hitBox;
 
-        public Player(string filename, int cols, int rows, MyGame game, int frames = -1, bool addCollider = true) : base(filename, cols, rows, frames, addCollider)
+
+        public Player(string filename, int cols, int rows, MyGame game, int frames = -1, bool addCollider = false) : base(filename, cols, rows, frames, addCollider)
         {
             
             game1 = game;
 
-            SetXY(game.width/2 , game.height - 100);
+            SetXY(game.width/2 , game.height - 250);
             SetOrigin(width / 2, height / 2);
             SetScaleXY(0.5f, 0.5f);
             scaleOG = scale;
             playerUI = new EasyDraw(game.width, game.height, false);
+            hitBox = new PlayerHitbox("colors.png", this, game1);
+            AddChild(hitBox);
         }
         
         public void Update()
@@ -69,6 +73,11 @@ namespace GXPEngine
                 if (currentFrame == 23 || currentFrame == 47)
                 {
                     SetCycle(0, 12, 24);
+                }
+
+                if (y < game.height -100)
+                {
+                    y += 0.5f * Time.deltaTime / 5;
                 }
 
                 foreach (Bullet bullet in bullets)
@@ -193,7 +202,7 @@ namespace GXPEngine
             }
         }
 
-        void Jump()
+        public void Jump()
         {
             if (canJump)
             {
@@ -261,7 +270,7 @@ namespace GXPEngine
         }
 
 
-        IEnumerator hitFeedback()
+        public IEnumerator hitFeedback()
         {
             hit = true;
             uint colorOG = color;
@@ -276,24 +285,6 @@ namespace GXPEngine
             hit = false;
         }
 
-        void OnCollision(GameObject other)
-        {
-            if (other.GetType().Equals(typeof(Enemy)) && other.noCol == false && !jumping && !hit && lives > 0)
-            {
-                game1.multiplier = 0;
-                game1.changeScore(-50);
-                other.flagged = true;
-                lives -= 1;
-                playerHit.Play();
-                if (lives != 0)
-                    LateAddChild(new Coroutine(hitFeedback()));
-                else SetCycle(24,14,18);
-            }
-
-            if (other.GetType().Equals(typeof(Wave)) && jumping == false && lives != 0)
-            {
-                Jump();
-            }
-        }
+        
     }
 }

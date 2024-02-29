@@ -87,6 +87,7 @@
     <Compile Include="GXPEngine\SoLoud\SoloudSoundSystem.cs" />
     <Compile Include="Pickup.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="PlayerHitbox.cs" />
     <Compile Include="WaitForSeconds.cs" />
     <Compile Include="Wave.cs" />
   </ItemGroup>
