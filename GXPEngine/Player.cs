@@ -288,13 +288,13 @@ namespace GXPEngine
             bool down = false;
             while (scaleX > scaleOG)
             {
-                yield return new WaitForSeconds(0.015f);
-                if (scaleX < 1.6f * scaleOG && !down) SetScaleXY(scaleX + 0.01f * scaleOG * Time.deltaTime / 5, scaleY + 0.01f * scaleOG * Time.deltaTime / 5);
+                yield return new WaitForSeconds(0.02f);
+                if (scaleX < 1.6f * scaleOG && !down) SetScaleXY(scaleX + 0.01f * scaleOG * Time.deltaTime , scaleY + 0.01f * scaleOG * Time.deltaTime );
 
                 else
                 {
                     down = true;
-                    SetScaleXY(scaleX - 0.01f * scaleOG * Time.deltaTime / 5, scaleY - 0.01f * scaleOG * Time.deltaTime / 5);
+                    SetScaleXY(scaleX - 0.01f * scaleOG * Time.deltaTime / 10, scaleY - 0.01f * scaleOG * Time.deltaTime / 10);
                     
                 }
             }
