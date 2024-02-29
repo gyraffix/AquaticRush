@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Collections;
 using System.ComponentModel;
+using TiledMapParser;
 
 namespace GXPEngine
 {
@@ -49,20 +50,27 @@ namespace GXPEngine
 
             SetXY(game.width/2 , game.height - 100);
             SetOrigin(width / 2, height / 2);
-            SetScaleXY(0.06f, 0.06f);
+            SetScaleXY(0.5f, 0.5f);
             scaleOG = scale;
             playerUI = new EasyDraw(game.width, game.height, false);
         }
         
         public void Update()
         {
-
+            
 
             if (start)
             {
+                if (currentFrame != 37 && currentFrame != 43)
+                Animate();
                 Move();
                 Shoot();
                 
+                if (currentFrame == 23 || currentFrame == 47)
+                {
+                    SetCycle(0, 12, 24);
+                }
+
                 foreach (Bullet bullet in bullets)
                 {
                     bullet.Update();
@@ -160,13 +168,13 @@ namespace GXPEngine
 
                 playerSpeed = -1.5f;
                 moving = true;
-                Mirror(true, false);
+                
             }
             else
             {
                 playerSpeed = 1.5f;
                 moving = true;
-                Mirror(false, false);
+                
             }
         }
 
@@ -232,20 +240,22 @@ namespace GXPEngine
         
         IEnumerator jumpTimer()
         {
-
+            SetCycle(38,6,24);
             SetScaleXY(scaleX +0.01f * scaleOG, scaleY+0.01f * scaleOG);
             bool down = false;
             while (scaleX > scaleOG)
             {
-                yield return new WaitForSeconds(0.01f);
+                yield return new WaitForSeconds(0.015f);
                 if (scaleX < 1.6f * scaleOG && !down) SetScaleXY(scaleX + 0.01f * scaleOG * Time.deltaTime / 5, scaleY + 0.01f * scaleOG * Time.deltaTime / 5);
 
                 else
                 {
                     down = true;
                     SetScaleXY(scaleX - 0.01f * scaleOG * Time.deltaTime / 5, scaleY - 0.01f * scaleOG * Time.deltaTime / 5);
+                    
                 }
             }
+            SetCycle(44, 4, 32);
             jumpStop.Play();
             jumping = false;
         }
@@ -254,11 +264,13 @@ namespace GXPEngine
         IEnumerator hitFeedback()
         {
             hit = true;
+            uint colorOG = color;
+            SetCycle(12, 12, 30);
             for (int i = 0; i < 4; i++)
             {
-                alpha = 0;
+                color = 0x555555;
                 yield return new WaitForSeconds(0.3f);
-                alpha = 1;
+                color = colorOG;
                 yield return new WaitForSeconds(0.3f);
             }
             hit = false;
@@ -266,17 +278,19 @@ namespace GXPEngine
 
         void OnCollision(GameObject other)
         {
-            if (other.GetType().Equals(typeof(Enemy)) && other.noCol == false && !jumping && !hit)
+            if (other.GetType().Equals(typeof(Enemy)) && other.noCol == false && !jumping && !hit && lives > 0)
             {
                 game1.multiplier = 0;
                 game1.changeScore(-50);
                 other.flagged = true;
                 lives -= 1;
                 playerHit.Play();
-                LateAddChild(new Coroutine(hitFeedback()));
+                if (lives != 0)
+                    LateAddChild(new Coroutine(hitFeedback()));
+                else SetCycle(24,14,18);
             }
 
-            if (other.GetType().Equals(typeof(Wave)) && jumping == false)
+            if (other.GetType().Equals(typeof(Wave)) && jumping == false && lives != 0)
             {
                 Jump();
             }

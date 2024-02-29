@@ -114,7 +114,7 @@ public class MyGame : Game {
         enemyPlace.alpha = 0;
         AddChild(enemyPlace);
 
-        player = new Player("jetski.png", 1, 1, this);
+        player = new Player("jetski.png", 7, 7, this, 48);
         AddChild(player);
 		waterSC = new Sound("Water.wav", true, true).Play();
 		
@@ -183,7 +183,8 @@ public class MyGame : Game {
             
             AddChild(enemyPlace);
             beach.SetXY(0, 0);
-            player = new Player("jetski.png", 1, 1, this);
+            player = new Player("jetski.png", 7, 7, this, 48);
+			
 			AddChild(player);
 			waterSC.IsPaused = false;
         }
@@ -208,7 +209,8 @@ public class MyGame : Game {
         playerDestroyed = false;
 		player.start = true;
 		gameStart.Play();
-		engineSC = new Sound("Jetski Engine.wav", true, true).Play();
+        player.SetCycle(0, 12, 24);
+        engineSC = new Sound("Jetski Engine.wav", true, true).Play();
     }
 
 	private void GameOver()
@@ -265,7 +267,7 @@ public class MyGame : Game {
             background.Translate(0, backgroundSpeed * (Time.deltaTime / 5) / 5);
         }
 
-		if (background.y < 4 && background.y > - 4)
+		if (background.y > -4)
 		{
 			background.SetXY(0, -height);
             background1.SetXY(0, -height);
