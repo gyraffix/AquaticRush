@@ -7,6 +7,8 @@ using System.Runtime.CompilerServices;
 using System.Collections;
 using System.ComponentModel;
 using TiledMapParser;
+using System.Drawing;
+using System.Linq.Expressions;
 
 namespace GXPEngine
 {
@@ -206,6 +208,11 @@ namespace GXPEngine
         {
             if (canJump)
             {
+                if (!game1.expression)
+                {
+                    game1.expression = true;
+                    game1.text(game1.expressions[game1.rnd.Next(5)], 28, 150, Color.Yellow, 1, 36);
+                }
                 game1.changeScore(50);
                 jumping = true;
                 jumpStart.Play();

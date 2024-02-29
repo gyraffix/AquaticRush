@@ -8,7 +8,7 @@ using System.Drawing;
 
 namespace GXPEngine
 {
-    internal class Pickup : Sprite
+    internal class Pickup : AnimationSprite
     {
 
         public int type;
@@ -17,7 +17,7 @@ namespace GXPEngine
         private MyGame game;
         bool used;
 
-        public Pickup(string filename, int startX, Player player, MyGame game, int type) : base(filename)
+        public Pickup(string filename, int startX, Player player, MyGame game, int type, int cols, int rows, int frames = -1) : base(filename, cols, rows, frames)
         {
             x = startX;
             y = -80;
@@ -26,11 +26,12 @@ namespace GXPEngine
             this.game = game;
             this.type = type;
             
-            scale = 0.5f;
+            scale = 0.35f;
         }
 
         public void Update()
         {
+            Animate();
             y += speed * Time.deltaTime / 5;
         }
 
@@ -50,17 +51,17 @@ namespace GXPEngine
             switch(type)
             {
                 case 0:
-                    game.text("Shot Speed UP!!!", x + width/2, y + 50, Color.Purple, 1, 30);
+                    game.text("Shot Speed UP!!!", x + width/2, y + 50, Color.LightBlue, 1, 30);
                     player.shootSpeed = 10;
                     yield return new WaitForSeconds(10);
                     player.shootSpeed = 50;
                     break; 
                 case 1:
-                    game.text("1UP!!!", x + width / 2, y + 50, Color.Purple, 1, 30);
+                    game.text("1UP!!!", x + width / 2, y + 50, Color.Red, 1, 30);
                     player.lives++;
                     break;
                 case 2:
-                    game.text("MAX MULTIPLIER!!!", x + width / 2, y + 50, Color.Purple, 1, 24);
+                    game.text("MAX MULTIPLIER!!!", x + width / 2, y + 50, Color.Yellow, 1, 24);
                     game.multiplier = 5;
                     game.multiplierPU = true;
                     yield return new WaitForSeconds(10);

@@ -16,7 +16,7 @@ using System.Reflection;
 
 public class MyGame : Game {
 
-    private Random rnd = new Random();
+    public Random rnd = new Random();
 
     private Sprite background;
 	private Sprite background1;
@@ -59,7 +59,7 @@ public class MyGame : Game {
 	public EasyDraw UI;
 	public EasyDraw timedUI;
 
-	private bool expression;
+	public bool expression;
 
 	public String[] enemyList = new string[5];
 	public String[] expressions = new string[5];
@@ -342,7 +342,7 @@ public class MyGame : Game {
 	
 	public void text(string text, float x, float y, Color color, float seconds, int fontSize)
 	{
-		AddChild(new Coroutine(ScreenText(text, x, y, color, seconds, fontSize)));
+		LateAddChild(new Coroutine(ScreenText(text, x, y, color, seconds, fontSize)));
 	}
 
 	private void PickupUpdate()
@@ -429,8 +429,26 @@ public class MyGame : Game {
 		{
 
 			yield return new WaitForSeconds(25);
-			Pickup pickup = new Pickup("triangle.png", rnd.Next(width - 150), player, this, rnd.Next(3));
-			enemyPlace.AddChild(pickup);
+			int random = rnd.Next(3);
+			Pickup pickup;
+
+            switch (random)
+			{
+				case 0:
+                    pickup = new Pickup("speed.png", rnd.Next(width - 150), player, this, random,3,3);
+                    break;
+				case 1:
+                    pickup = new Pickup("life.png", rnd.Next(width - 150), player, this, random,3,3);
+                    break;
+				case 2:
+                    pickup = new Pickup("multiplier.png", rnd.Next(width - 150), player, this, random,3,3);
+                    break;
+				default:
+                    pickup = new Pickup("triangle.png", rnd.Next(width - 150), player, this, random, 1, 1);
+					break;
+            }
+            pickup.SetCycle(0, 9, 24);
+            enemyPlace.AddChild(pickup);
 			pickups.Add(pickup);
 
 		}
