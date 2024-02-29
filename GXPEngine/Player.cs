@@ -25,6 +25,7 @@ namespace GXPEngine
         public Sound playerHit = new Sound("Hit.wav");
 
         private float playerSpeed;
+        private float speed;
         public float lives = 3;
         public float scaleOG;
         private float rotateSpeed;
@@ -114,13 +115,39 @@ namespace GXPEngine
             moving = false;
             rotating = false;
 
-            if (Input.GetKey(Key.A))
+            if (Input.GetKey(Key.ONE))
             {
+                speed = 1.5f;
                 Walk(-1);
                 Rotate(-1);
             }
-            if (Input.GetKey(Key.D)) 
-            {  
+            if (Input.GetKey(Key.TWO))
+            {
+                speed = 1f;
+                Walk(-1);
+                Rotate(-1);
+            }
+            if (Input.GetKey(Key.THREE))
+            {
+                speed = 0.5f;
+                Walk(-1);
+                Rotate(-1);
+            }
+            if (Input.GetKey(Key.FIVE))
+            {
+                speed = 0.5f;
+                Walk(1);
+                Rotate(1);
+            }
+            if (Input.GetKey(Key.SIX))
+            {
+                speed = 1f;
+                Walk(1);
+                Rotate(1);
+            }
+            if (Input.GetKey(Key.SEVEN)) 
+            {
+                speed = 1.5f;
                 Walk(1); 
                 Rotate(1);
             }
@@ -177,13 +204,13 @@ namespace GXPEngine
             if (Direction < 0)
             {
 
-                playerSpeed = -1.5f;
+                playerSpeed = -speed;
                 moving = true;
                 
             }
             else
             {
-                playerSpeed = 1.5f;
+                playerSpeed = speed;
                 moving = true;
                 
             }

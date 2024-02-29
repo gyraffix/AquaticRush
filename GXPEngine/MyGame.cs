@@ -96,10 +96,10 @@ public class MyGame : Game {
 		AddChild(startScreen);
 		startScreen.Fill(Color.Black);
         startScreen.TextFont(Utils.LoadFont("CheerfulPeach.otf", 40));
-        startScreen.Text("Press Space to Start", width / 3f + 3, height / 2);
+        startScreen.Text("Press S to Start", width / 2.75f + 3, height / 2);
 		startScreen.Fill(Color.White);
         startScreen.TextFont(Utils.LoadFont("CheerfulPeach.otf", 40));
-        startScreen.Text("Press Space to Start", width / 3f, height / 2);
+        startScreen.Text("Press S to Start", width / 2.75f, height / 2);
 
         gameOverScreen = new EasyDraw(width, height);
         gameOverScreen.TextFont("CheerfulPeach.otf", 40);
@@ -164,7 +164,7 @@ public class MyGame : Game {
 		}
 		else
 		{
-			if (Input.GetKeyDown(Key.SPACE))
+			if (Input.GetKeyDown(Key.S))
 			{
 				StartGame();
 			}
