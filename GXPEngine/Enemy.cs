@@ -77,23 +77,20 @@ namespace GXPEngine
                 switch (enemyType)
                 {
                     case 0:
-                        if (currentFrame == 16)
-                        {
 
-                            enemySpeed = 0.60f;
-                            SetCycle(18, 6, 18);
-                        }
+                        enemySpeed = 0.60f;
+                        SetCycle(18, 6, 18);
+
                         if (currentFrame == 23)
                         {
                             LateRemove();
                         }
                         break;
                     case 2:
-                        if (currentFrame == 7)
-                        {
-                            sideSpeed = 0.25f;
-                            SetCycle(8, 7, 18);
-                        }
+
+                        sideSpeed = 0.25f;
+                        SetCycle(8, 7, 18);
+                
                         if (currentFrame == 14)
                         {
                             LateRemove();

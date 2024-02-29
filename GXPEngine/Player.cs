@@ -206,7 +206,7 @@ namespace GXPEngine
         {
             if (canJump)
             {
-                game1.changeScore(100);
+                game1.changeScore(50);
                 jumping = true;
                 jumpStart.Play();
                 Console.WriteLine();
