@@ -39,7 +39,7 @@ namespace GXPEngine
         {
             if (other.GetType().Equals(typeof(PlayerHitbox)) && !used)
             {
-                
+                game.multUp.Play();
                 this.alpha = 0;
                 used = true;
                 LateAddChild(new Coroutine(powerUp()));

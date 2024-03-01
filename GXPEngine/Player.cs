@@ -15,7 +15,7 @@ namespace GXPEngine
     public class Player : AnimationSprite
     {
 
-       private List<int> toDestroy = new List<int>();
+        private List<int> toDestroy = new List<int>();
         public bool start;
 
         private Sound gunShoot = new Sound("Gun Shoot.wav");
@@ -33,7 +33,7 @@ namespace GXPEngine
         private bool moving;
         public bool jumping;
         public bool hit;
-        
+
         private bool canJump = true;
         private bool coolDown;
         public bool canShoot = true;
@@ -50,10 +50,10 @@ namespace GXPEngine
 
         public Player(string filename, int cols, int rows, MyGame game, int frames = -1, bool addCollider = false) : base(filename, cols, rows, frames, addCollider)
         {
-            
+
             game1 = game;
 
-            SetXY(game.width/2 , game.height - 250);
+            SetXY(game.width / 2, game.height - 250);
             SetOrigin(width / 2, height / 2);
             SetScaleXY(0.5f, 0.5f);
             scaleOG = scale;
@@ -61,24 +61,24 @@ namespace GXPEngine
             hitBox = new PlayerHitbox("colors.png", this, game1);
             AddChild(hitBox);
         }
-        
+
         public void Update()
         {
-            
+
 
             if (start)
             {
                 if (currentFrame != 37 && currentFrame != 43)
-                Animate();
+                    Animate();
                 Move();
                 Shoot();
-                
+
                 if (currentFrame == 23 || currentFrame == 47)
                 {
                     SetCycle(0, 12, 24);
                 }
 
-                if (y < game.height -100)
+                if (y < game.height - 100)
                 {
                     y += 0.5f * Time.deltaTime / 5;
                 }
@@ -109,13 +109,13 @@ namespace GXPEngine
                 }
             }
         }
-        
+
         void Move()
         {
             moving = false;
             rotating = false;
 
-            if (Input.GetKey(Key.ONE))
+            if (Input.GetKey(Key.ONE) || Input.GetKey(Key.A))
             {
                 speed = 1.5f;
                 Walk(-1);
@@ -145,7 +145,7 @@ namespace GXPEngine
                 Walk(1);
                 Rotate(1);
             }
-            if (Input.GetKey(Key.SEVEN)) 
+            if (Input.GetKey(Key.SEVEN) || Input.GetKey(Key.D)) 
             {
                 speed = 1.5f;
                 Walk(1); 
@@ -242,7 +242,7 @@ namespace GXPEngine
                 }
                 game1.changeScore(50);
                 jumping = true;
-                jumpStart.Play();
+                jumpStart.Play(false, 0, 1.7f);
                 Console.WriteLine();
                 LateAddChild(new Coroutine(jumpTimer()));
             }
@@ -254,7 +254,7 @@ namespace GXPEngine
             {
                 if (!addUI) parent.AddChild(playerUI);
                 Bullet newBullet = new Bullet("bullet.png", x, y, rotation/45, 2, 2);
-                gunShoot.Play();
+                gunShoot.Play(false, 0 , 0.7f);
 
                 parent.AddChild(newBullet);
                 bullets.Add(newBullet);
@@ -276,7 +276,7 @@ namespace GXPEngine
                 playerUI.Fill(255, 0, 0);
                 playerUI.Rect(game.width/2, game.height - 40, (i*100)/shootSpeed, 10);
             }
-            gunLoaded.Play();
+            gunLoaded.Play(false, 0, 0.7f);
             playerUI.ClearTransparent();
             canShoot = true;
         }
@@ -299,7 +299,7 @@ namespace GXPEngine
                 }
             }
             SetCycle(44, 4, 32);
-            jumpStop.Play();
+            jumpStop.Play(false, 0, 1.3f);
             jumping = false;
         }
 

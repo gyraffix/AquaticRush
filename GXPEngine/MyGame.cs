@@ -25,7 +25,7 @@ public class MyGame : Game {
 
 	private Sound gameStart = new Sound("Start.wav");
 
-	private Sound multUp = new Sound("Multiplier Up.wav");
+	public Sound multUp = new Sound("Multiplier Up.wav");
     private Sound multLost = new Sound("Multiplier Lost.wav");
 
 	private SoundChannel deathSC;
@@ -34,6 +34,7 @@ public class MyGame : Game {
 
 	private SoundChannel engineSC; 
 	private SoundChannel waterSC;
+	private SoundChannel bgmSC;
 
     private AnimationSprite beach;
 	private Player player;
@@ -50,7 +51,10 @@ public class MyGame : Game {
 	private EasyDraw startScreen;
 	private EasyDraw gameOverScreen;
 
-	public float difficulty = 1;
+	private Sprite title;
+
+
+    public float difficulty = 1;
 	public int score { get; set; } = 0;
 	public int multiplier = 1;
 	public bool multiplierPU;
@@ -69,7 +73,7 @@ public class MyGame : Game {
 	private bool playerDestroyed = true;
     public MyGame() : base(1366, 768, false)
     {
-		targetFps = 60;
+		//targetFps = 60;
 
 		//TODO:
 
@@ -92,8 +96,10 @@ public class MyGame : Game {
 		
 
         startScreen = new EasyDraw(width, height);
-
-		AddChild(startScreen);
+        title = new Sprite("title.png", false, false);
+        AddChild(startScreen);
+		startScreen.AddChild(title);
+		title.x += 250;
 		startScreen.Fill(Color.Black);
         startScreen.TextFont(Utils.LoadFont("CheerfulPeach.otf", 40));
         startScreen.Text("Press S to Start", width / 2.75f + 3, height / 2);
@@ -128,6 +134,7 @@ public class MyGame : Game {
         player = new Player("jetski.png", 7, 7, this, 48);
         AddChild(player);
 		waterSC = new Sound("Water.wav", true, true).Play();
+		
 		AddChild(timedUI);
     }
 
@@ -153,6 +160,7 @@ public class MyGame : Game {
 			{
 				gameOver = true;
 				deathSC = new Sound("Death.wav").Play();
+                bgmSC.Stop();
                 engineSC.Stop();
                 waterSC.IsPaused = true;
             }
@@ -179,9 +187,9 @@ public class MyGame : Game {
 
 		else
 		{
+			RemoveChild(background);
 			RemoveChild(gameOverScreen);
-
-            UI = new EasyDraw(width, 200, false);
+			UI = new EasyDraw(width, 200, false);
 			timedUI = new EasyDraw(width, height, false); 
             background.SetXY(0, -height);
             background1.SetXY(0, -height);
@@ -224,20 +232,18 @@ public class MyGame : Game {
 		gameStart.Play();
         player.SetCycle(0, 12, 24);
         engineSC = new Sound("Jetski Engine.wav", true, true).Play();
+        bgmSC = new Sound("bgm.mp3", true, true).Play(false, 0, 0.8f);
     }
 
 	private void GameOver()
 	{
+		
 		while (deathSC.IsPlaying) ;
 		gameOverScreen.ClearTransparent();
 		restart = true;
 		player.LateDestroy();
 		playerDestroyed = true;
 		RemoveChild(player);
-		if (score > Settings.highScore)
-		{
-			Settings.highScore = score;
-		}
         foreach (GameObject obj in GetChildren())
         {
 			RemoveChild(obj);
@@ -251,9 +257,15 @@ public class MyGame : Game {
         score = 0;
 		multiplier = 1;
 		difficulty = 1;
+		AddChild(background);
 		AddChild(gameOverScreen);
+		
         Console.WriteLine(Settings.highScore);
-        gameOverScreen.Text("You Lost" + "\n" + "Score:" + finalScore + "\nPress Space to try again", width / 2f, height / 2);
+        gameOverScreen.Fill(Color.Black);
+        gameOverScreen.TextFont(Utils.LoadFont("CheerfulPeach.otf", 40));
+        gameOverScreen.Text("    You Lost" + "\n" + "Score:" + finalScore + "\nPress S to try again", width / 2f + 3, height / 2);
+        gameOverScreen.Fill(Color.White);
+        gameOverScreen.Text("    You Lost" + "\n" + "Score:" + finalScore + "\nPress S to try again", width / 2f, height / 2);
     }
 
 	public void changeScore(int change)
