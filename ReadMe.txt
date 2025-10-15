@@ -1,1 +1,1 @@
-This is the first proper game I made in a team setting. As I was the only Engineer in the team, all the code was written by me, there is some code in there that is written for a custom jet-ski controller we made.
+This is the first proper game I made in a team setting. As I was the only Engineer in the team, all the code was written by me. There is some code in there that is written for a custom jet-ski controller we made.
